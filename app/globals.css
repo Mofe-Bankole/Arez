@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+/* ====================== CUSTOM THEME ====================== */
+@theme {
+  /* Colors - All your original colors preserved and organized */
+  --color-background: #0a0a0a;
+  --color-surface: #131313;
+  --color-surface-dim: #131313;
+  --color-surface-low: #1c1b1b;
+  --color-surface-container: #201f1f;
+  --color-surface-high: #2a2a2a;
+  --color-surface-higher: #353534;
+  --color-surface-highest: #3a3939;
+  --color-surface-lowest: #0e0e0e;
+
+  /* Primary - Electric Cyan */
+  --color-primary: #e9feff;
+  --color-primary-light: #63f7ff;
+  --color-primary-main: #00f5ff;
+  --color-primary-dark: #00dce5;
+  --color-primary-container: #00f5ff;
+  --color-on-primary: #003739;
+  --color-on-primary-container: #006c71;
+
+  /* Accent / Success - Green */
+  --color-accent: #3ce36a;
+  --color-tertiary: #eeffea;
+  --color-tertiary-fixed-dim: #3ce36a;
+  --color-tertiary-container: #5afb7e;
+
+  /* Text */
+  --color-on-surface: #e5e2e1;
+  --color-on-surface-muted: #b9caca;
+  --color-on-surface-variant: #b9caca;
+
+  /* Borders */
+  --color-border: #3a494a;
+  --color-outline: #849495;
+  --color-outline-variant: #3a494a;
+
+  /* Others */
+  --color-error: #ffb4ab;
+  --color-inverse-surface: #e5e2e1;
+  --color-inverse-on-surface: #313030;
+
+  /* Border Radius */
+  --radius-default: 0.125rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.5rem;
+  --radius-2xl: 0.75rem;
+
+  /* Font Family */
+  --font-sans: Inter, system-ui, sans-serif;
+  --font-headline: Inter, system-ui, sans-serif;
+  --font-body: Inter, system-ui, sans-serif;
+}
+
+/* ====================== GLOBAL STYLES ====================== */
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-on-surface);
+}
+
+/* Glassmorphism + Stealth Effects */
+.glass-panel {
+  background: rgba(19, 19, 19, 0.72);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(58, 73, 74, 0.25);
+}
+
+.stealth-mesh {
+  background-image: 
+    radial-gradient(circle at 2px 2px, rgba(0, 245, 255, 0.06) 1px, transparent 0);
+  background-size: 40px 40px;
+}
+
+.glow-button {
+  background: linear-gradient(135deg, #63f7ff 0%, #00dce5 100%);
+  color: #003739;
+  font-weight: 700;
+  transition: all 0.25s ease;
+}
+
+.glow-button:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 0 30px rgba(0, 245, 255, 0.45);
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  border-color: rgba(0, 245, 255, 0.35);
+  box-shadow: 0 10px 30px rgba(0, 245, 255, 0.08);
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* button{cursor: pointer;} */
