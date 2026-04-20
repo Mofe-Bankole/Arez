@@ -1,139 +1,74 @@
-import "../globals.css"
+"use client";
+
+import "../globals.css";
+import SideBar from "@/components/Sidebar";
+import WalletConnectButton from "@/components/ConnectWalletButton";
+import { useBalances } from "@/hooks/useBalances";
+import { useWallet } from "@solana/wallet-adapter-react";
+import {
+  Bell,
+  Eye,
+  Lock,
+  Shield,
+  ShieldCheck,
+  TrendingUp,
+  Coins,
+  RefreshCw,
+} from "lucide-react";
 
 export default function Dashboard() {
+  const { connected, publicKey } = useWallet();
+  const balances = useBalances();
+
+  const addressLabel = connected && publicKey
+    ? `${publicKey.toBase58().slice(0, 4)}...${publicKey.toBase58().slice(-4)}`
+    : "Not connected";
+
+  const formatCompact = (n: number) =>
+    new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(n);
+
+  const formatMoney = (n: number) =>
+    new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(n);
+
+  const usdc =
+    balances.status === "ready" ? balances.usdc : null;
+  const sol =
+    balances.status === "ready" ? balances.sol : null;
+
   return (
-    <>
-      <aside className="hidden md:flex flex-col h-full py-8 px-4 bg-[#0e0e0e] border-r-0 fixed left-0 w-64 z-50">
-        <div className="mb-10 px-2">
-          <h1 className="text-2xl font-black tracking-tighter text-[#e9feff]">Arez</h1>
-          <p className="text-[10px] text-outline tracking-[0.2em] uppercase mt-1">
-            Privacy-First Payroll
-          </p>
-        </div>
-        <nav className="flex-1 space-y-1">
-          {/* Dashboard (Active) */}
-          <a
-            className="flex items-center px-3 py-3 text-[#00f5ff] font-bold border-r-2 border-[#00f5ff] transition-all duration-200 hover:bg-[#1c1b1b]"
-            href="#"
-          >
-            <span className="material-symbols-outlined mr-3" data-icon="dashboard">
-              <Dashboard/>
-            </span>
-            <span className="font-['Inter'] text-sm tracking-wide uppercase font-medium">
-              Dashboard
-            </span>
-          </a>
-          {/* Send Payment */}
-          <a
-            className="flex items-center px-3 py-3 text-[#e5e2e1]/60 hover:text-[#e5e2e1] transition-colors duration-200 hover:bg-[#1c1b1b] group"
-            href="#"
-          >
-            <span className="material-symbols-outlined mr-3" data-icon="payments">
-              payments
-            </span>
-            <span className="font-['Inter'] text-sm tracking-wide uppercase font-medium">
-              Send Payment
-            </span>
-          </a>
-          {/* Payroll Batch */}
-          <a
-            className="flex items-center px-3 py-3 text-[#e5e2e1]/60 hover:text-[#e5e2e1] transition-colors duration-200 hover:bg-[#1c1b1b] group"
-            href="#"
-          >
-            <span className="material-symbols-outlined mr-3" data-icon="account_tree">
-              account_tree
-            </span>
-            <span className="font-['Inter'] text-sm tracking-wide uppercase font-medium">
-              Payroll Batch
-            </span>
-          </a>
-          {/* Invoices */}
-          <a
-            className="flex items-center px-3 py-3 text-[#e5e2e1]/60 hover:text-[#e5e2e1] transition-colors duration-200 hover:bg-[#1c1b1b] group"
-            href="#"
-          >
-            <span className="material-symbols-outlined mr-3" data-icon="description">
-              description
-            </span>
-            <span className="font-['Inter'] text-sm tracking-wide uppercase font-medium">
-              Invoices
-            </span>
-          </a>
-          {/* History */}
-          <a
-            className="flex items-center px-3 py-3 text-[#e5e2e1]/60 hover:text-[#e5e2e1] transition-colors duration-200 hover:bg-[#1c1b1b] group"
-            href="#"
-          >
-            <span className="material-symbols-outlined mr-3" data-icon="history">
-              history
-            </span>
-            <span className="font-['Inter'] text-sm tracking-wide uppercase font-medium">
-              History
-            </span>
-          </a>
-          {/* Viewing Keys */}
-          <a
-            className="flex items-center px-3 py-3 text-[#e5e2e1]/60 hover:text-[#e5e2e1] transition-colors duration-200 hover:bg-[#1c1b1b] group"
-            href="#"
-          >
-            <span className="material-symbols-outlined mr-3" data-icon="vpn_key">
-              vpn_key
-            </span>
-            <span className="font-['Inter'] text-sm tracking-wide uppercase font-medium">
-              Viewing Keys
-            </span>
-          </a>
-          {/* Settings */}
-          <a
-            className="flex items-center px-3 py-3 text-[#e5e2e1]/60 hover:text-[#e5e2e1] transition-colors duration-200 hover:bg-[#1c1b1b] group"
-            href="#"
-          >
-            <span className="material-symbols-outlined mr-3" data-icon="settings">
-              settings
-            </span>
-            <span className="font-['Inter'] text-sm tracking-wide uppercase font-medium">
-              Settings
-            </span>
-          </a>
-        </nav>
-        <div className="mt-auto">
-          <button className="w-full stealth-glow text-on-primary-container font-bold py-4 rounded-xl text-xs tracking-widest uppercase scale-95 active:scale-90 transition-transform">
-            Shield &amp; Send
-          </button>
-        </div>
-      </aside>
-      {/* Main Content Canvas */}
-      <main className="flex-1 ml-0 md:ml-64 flex flex-col min-h-screen bg-background">
+    <div className="flex min-h-screen w-full bg-background">
+      <SideBar />
+      <main className="flex-1 flex flex-col min-h-screen bg-background">
         {/* TopNavBar Component */}
         <header className="sticky top-0 z-50 flex justify-between items-center px-8 w-full h-16 bg-[#131313]/70 backdrop-blur-xl shadow-[0_0_20px_rgba(0,245,255,0.04)]">
           <div className="flex items-center gap-4">
-            <span
-              className="material-symbols-outlined text-outline"
-              data-icon="shield"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              shield
-            </span>
+            <Shield className="h-5 w-5 text-outline" aria-hidden="true" />
             <div className="flex items-center space-x-2 bg-surface-container-high px-3 py-1.5 rounded-full">
               <span className="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
-              <span className="font-['Inter'] text-xs font-bold tracking-[0.05em] text-[#e5e2e1]">
+              <span className="font-['Inter'] text-xs font-bold tragecking-[0.05em] text-[#e5e2e1]">
                 Mainnet
               </span>
             </div>
           </div>
           <div className="flex items-center space-x-6">
-            <div className="flex items-center gap-2 group cursor-pointer">
+            <div className="hidden sm:flex items-center gap-2">
               <div className="bg-surface-container-highest px-3 py-1.5 rounded-lg border border-outline-variant/20">
-                <span className="font-['Inter'] text-xs font-bold tracking-[0.05em] uppercase text-primary">
-                  0x71C...4eD2
+                <span className="font-mono tabular-nums text-xs font-bold tracking-[0.05em] uppercase text-primary">
+                  {addressLabel}
                 </span>
               </div>
+              <WalletConnectButton />
             </div>
             <div className="flex space-x-4">
-              <button className="text-outline hover:text-[#00f5ff] transition-all duration-300">
-                <span className="material-symbols-outlined" data-icon="notifications">
-                  notifications
-                </span>
+              <button
+                type="button"
+                className="h-10 w-10 inline-flex items-center justify-center rounded-lg text-outline hover:text-primary-container hover:bg-surface-container-high transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                aria-label="Notifications"
+              >
+                <Bell className="h-5 w-5" aria-hidden="true" />
               </button>
               <div className="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden ring-1 ring-outline-variant/30">
                 <img
@@ -155,7 +90,13 @@ export default function Dashboard() {
                 Command Center
               </h2>
               <p className="text-on-surface-variant/70 text-sm mt-1">
-                Status: Active &amp; Encrypted
+                {balances.status === "loading"
+                  ? "Syncing balances…"
+                  : balances.status === "error"
+                    ? `Balance sync failed: ${balances.message}`
+                    : connected
+                      ? "Status: Active & Encrypted"
+                      : "Connect your wallet to view live balances."}
               </p>
             </div>
             <div className="hidden md:flex space-x-3">
@@ -169,68 +110,98 @@ export default function Dashboard() {
           </section>
           {/* KPI Grid (Bento Style) */}
           <section className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {/* Total Shielded Balance */}
-            <div className="md:col-span-2 bg-surface-container-low p-6 rounded-xl relative overflow-hidden group">
+            {/* Primary: Shielded USDC (Wallet) */}
+            <div className="md:col-span-2 bg-surface-container-low p-6 rounded-xl relative overflow-hidden group border border-outline-variant/10">
               <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                <span
-                  className="material-symbols-outlined text-8xl"
-                  data-icon="account_balance_wallet"
-                >
-                  account_balance_wallet
-                </span>
+                <Coins className="h-20 w-20" aria-hidden="true" />
               </div>
-              <label className="text-[10px] text-outline font-bold uppercase tracking-[0.1em]">
-                Total Shielded Balance
-              </label>
-              <div className="mt-4 flex items-baseline space-x-2">
-                <h3 className="text-4xl font-black tracking-tighter text-primary-container">
-                  1,240,582.00
-                </h3>
-                <span className="text-primary-fixed-dim font-bold text-sm">USDC</span>
+              <div className="flex items-center justify-between gap-4">
+                <label className="text-[10px] text-outline font-bold uppercase tracking-widest">
+                  USDC Balance (Devnet)
+                </label>
+                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-outline">
+                  <RefreshCw
+                    className={[
+                      "h-3.5 w-3.5",
+                      balances.status === "loading" ? "animate-spin text-primary-container" : "",
+                    ].join(" ")}
+                    aria-hidden="true"
+                  />
+                  <span>
+                    {balances.status === "ready"
+                      ? `Updated ${new Date(balances.updatedAt).toLocaleTimeString()}`
+                      : balances.status === "loading"
+                        ? "Updating"
+                        : balances.status === "error"
+                          ? "Degraded"
+                          : "Idle"}
+                  </span>
+                </div>
               </div>
-              <div className="mt-6 flex items-center text-tertiary-fixed-dim text-xs font-bold">
-                <span
-                  className="material-symbols-outlined text-sm mr-1"
-                  data-icon="trending_up"
-                >
-                  trending_up
-                </span>
-                <span>+12.5% from last month</span>
+
+              <div className="mt-4 flex items-baseline gap-3">
+                <div className="text-5xl font-black tracking-tighter text-primary-container font-mono tabular-nums">
+                  {usdc === null ? "--" : formatMoney(usdc)}
+                </div>
+                <div className="text-sm font-bold text-primary-fixed-dim uppercase tracking-widest">
+                  USDC
+                </div>
+              </div>
+
+              <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs">
+                <div className="inline-flex items-center gap-2 text-tertiary-fixed-dim font-bold">
+                  <TrendingUp className="h-4 w-4" aria-hidden="true" />
+                  <span>Privacy rail ready</span>
+                </div>
+                <div className="text-outline">
+                  <span className="font-bold">Note:</span>{" "}
+                  <span className="text-on-surface-variant">
+                    This is wallet USDC (devnet). “Shielded” totals can be wired to Umbra indexer next.
+                  </span>
+                </div>
               </div>
             </div>
-            {/* This Month Payroll */}
-            <div className="bg-surface-container-low p-6 rounded-xl border-l border-primary-container/20">
-              <label className="text-[10px] text-outline font-bold uppercase tracking-[0.1em]">
-                This Month Payroll
+
+            {/* SOL Balance */}
+            <div className="bg-surface-container-low p-6 rounded-xl border border-outline-variant/10">
+              <label className="text-[10px] text-outline font-bold uppercase tracking-widest">
+                SOL Balance
               </label>
-              <div className="mt-4">
-                <h3 className="text-2xl font-black tracking-tight text-[#e5e2e1]">
-                  428,100.00
-                </h3>
-                <p className="text-on-surface-variant text-[10px] mt-1">
-                  Estimated gas: 0.042 ETH
-                </p>
+              <div className="mt-4 flex items-baseline gap-2">
+                <div className="text-2xl font-black tracking-tight text-[#e5e2e1] font-mono tabular-nums">
+                  {sol === null ? "--" : formatCompact(sol)}
+                </div>
+                <span className="text-on-surface-variant text-[10px] font-bold uppercase tracking-widest">
+                  SOL
+                </span>
               </div>
+              <p className="text-on-surface-variant text-[10px] mt-2">
+                Used for network fees.
+              </p>
             </div>
             {/* Active Recipients */}
-            <div className="bg-surface-container-low p-6 rounded-xl border-l border-tertiary-fixed-dim/20">
-              <label className="text-[10px] text-outline font-bold uppercase tracking-[0.1em]">
+            <div className="bg-surface-container-low p-6 rounded-xl border border-outline-variant/10">
+              <label className="text-[10px] text-outline font-bold uppercase tracking-widest">
                 Active Recipients
               </label>
               <div className="mt-4">
-                <h3 className="text-2xl font-black tracking-tight text-[#e5e2e1]">142</h3>
+                <h3 className="text-2xl font-black tracking-tight text-[#e5e2e1] font-mono tabular-nums">
+                  142
+                </h3>
                 <p className="text-on-surface-variant text-[10px] mt-1">
                   across 12 departments
                 </p>
               </div>
             </div>
             {/* Private Tx Count */}
-            <div className="bg-surface-container-low p-6 rounded-xl col-span-1 border-l border-outline-variant/30">
-              <label className="text-[10px] text-outline font-bold uppercase tracking-[0.1em]">
+            <div className="bg-surface-container-low p-6 rounded-xl col-span-1 border border-outline-variant/10">
+              <label className="text-[10px] text-outline font-bold uppercase tracking-widest">
                 Private Tx Count
               </label>
               <div className="mt-4">
-                <h3 className="text-2xl font-black tracking-tight text-[#e5e2e1]">3,892</h3>
+                <h3 className="text-2xl font-black tracking-tight text-[#e5e2e1] font-mono tabular-nums">
+                  3,892
+                </h3>
                 <p className="text-on-surface-variant text-[10px] mt-1">
                   all-time encrypted
                 </p>
@@ -307,13 +278,7 @@ export default function Dashboard() {
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-2">
                         <div className="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center">
-                          <span
-                            className="material-symbols-outlined text-xs text-outline"
-                            data-icon="lock"
-                            style={{ fontVariationSettings: "'FILL' 1" }}
-                          >
-                            lock
-                          </span>
+                          <Lock className="h-3.5 w-3.5 text-outline" aria-hidden="true" />
                         </div>
                         <span className="font-mono text-sm text-outline tracking-wider">
                           • • • • 9f42
@@ -329,10 +294,12 @@ export default function Dashboard() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button className="text-outline hover:text-primary transition-colors">
-                        <span className="material-symbols-outlined" data-icon="visibility">
-                          visibility
-                        </span>
+                      <button
+                        type="button"
+                        className="h-10 w-10 inline-flex items-center justify-center rounded-lg text-outline hover:text-primary-container hover:bg-surface-container-high transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        aria-label="View"
+                      >
+                        <Eye className="h-4 w-4" aria-hidden="true" />
                       </button>
                     </td>
                   </tr>
@@ -344,13 +311,7 @@ export default function Dashboard() {
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-2">
                         <div className="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center">
-                          <span
-                            className="material-symbols-outlined text-xs text-outline"
-                            data-icon="lock"
-                            style={{ fontVariationSettings: "'FILL' 1" }}
-                          >
-                            lock
-                          </span>
+                          <Lock className="h-3.5 w-3.5 text-outline" aria-hidden="true" />
                         </div>
                         <span className="font-mono text-sm text-outline tracking-wider">
                           • • • • a12c
@@ -366,10 +327,12 @@ export default function Dashboard() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button className="text-outline hover:text-primary transition-colors">
-                        <span className="material-symbols-outlined" data-icon="visibility">
-                          visibility
-                        </span>
+                      <button
+                        type="button"
+                        className="h-10 w-10 inline-flex items-center justify-center rounded-lg text-outline hover:text-primary-container hover:bg-surface-container-high transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        aria-label="View"
+                      >
+                        <Eye className="h-4 w-4" aria-hidden="true" />
                       </button>
                     </td>
                   </tr>
@@ -381,13 +344,7 @@ export default function Dashboard() {
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-2">
                         <div className="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center">
-                          <span
-                            className="material-symbols-outlined text-xs text-outline"
-                            data-icon="lock"
-                            style={{ fontVariationSettings: "'FILL' 1" }}
-                          >
-                            lock
-                          </span>
+                          <Lock className="h-3.5 w-3.5 text-outline" aria-hidden="true" />
                         </div>
                         <span className="font-mono text-sm text-outline tracking-wider">
                           • • • • d771
@@ -403,10 +360,12 @@ export default function Dashboard() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button className="text-outline hover:text-primary transition-colors">
-                        <span className="material-symbols-outlined" data-icon="visibility">
-                          visibility
-                        </span>
+                      <button
+                        type="button"
+                        className="h-10 w-10 inline-flex items-center justify-center rounded-lg text-outline hover:text-primary-container hover:bg-surface-container-high transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        aria-label="View"
+                      >
+                        <Eye className="h-4 w-4" aria-hidden="true" />
                       </button>
                     </td>
                   </tr>
@@ -420,45 +379,11 @@ export default function Dashboard() {
           <div className="relative flex items-center justify-center">
             <div className="absolute w-12 h-12 rounded-full border border-primary-container/20 animate-ping"></div>
             <div className="relative w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-primary-container/40">
-              <span
-                className="material-symbols-outlined text-primary-container text-xl"
-                data-icon="gpp_good"
-                style={{ fontVariationSettings: "'FILL' 1" }}
-              >
-                gpp_good
-              </span>
+              <ShieldCheck className="h-5 w-5 text-primary-container" aria-hidden="true" />
             </div>
           </div>
         </div>
       </main>
-      {/* Mobile BottomNavBar (Suppressed on Web per requirements) */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full h-16 bg-[#131313]/90 backdrop-blur-lg flex justify-around items-center px-4 z-50">
-        <button className="text-[#00f5ff]">
-          <span className="material-symbols-outlined" data-icon="dashboard">
-            dashboard
-          </span>
-        </button>
-        <button className="text-outline">
-          <span className="material-symbols-outlined" data-icon="payments">
-            payments
-          </span>
-        </button>
-        <button className="text-outline">
-          <span className="material-symbols-outlined" data-icon="account_tree">
-            account_tree
-          </span>
-        </button>
-        <button className="text-outline">
-          <span className="material-symbols-outlined" data-icon="history">
-            history
-          </span>
-        </button>
-        <button className="text-outline">
-          <span className="material-symbols-outlined" data-icon="settings">
-            settings
-          </span>
-        </button>
-      </nav>
-    </>
+    </div>
   );
 }

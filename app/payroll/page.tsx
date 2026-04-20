@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
-import { Key } from "lucide-react";
+import SideBar from "@/components/Sidebar";
+import WalletConnectButton from "@/components/ConnectWalletButton";
+import { Bell, CheckCircle2, CloudUpload, Eye, Lock, Shield, ShieldCheck } from "lucide-react";
 
 const payrollRows = [
   {
@@ -49,82 +51,7 @@ const payrollRows = [
 export default function PayrollPage() {
   return (
     <div className="flex h-screen w-full bg-background text-on-surface font-body overflow-hidden">
-      {/* SideNavBar */}
-      <aside className="flex flex-col h-full py-8 px-4 bg-[#0e0e0e] border-r-0 docked left-0 h-screen w-64">
-        <div className="mb-12 px-2">
-          <h1 className="text-2xl font-black tracking-tighter text-[#e9feff]">
-            Arez
-          </h1>
-          <p className="text-[10px] text-primary-container/60 font-bold uppercase tracking-[0.2em] mt-1">
-            Privacy-First Payroll
-          </p>
-        </div>
-        <nav className="flex-1 space-y-1">
-          <a className="flex items-center px-4 py-3 space-x-3 transition-colors duration-200 text-[#e5e2e1]/60 hover:text-[#e5e2e1] hover:bg-[#1c1b1b] font-['Inter'] text-sm tracking-wide uppercase font-medium" href="#">
-            <span className="material-symbols-outlined" data-icon="dashboard">
-              dashboard
-            </span>
-            <span>Dashboard</span>
-          </a>
-          <a className="flex items-center px-4 py-3 space-x-3 transition-colors duration-200 text-[#e5e2e1]/60 hover:text-[#e5e2e1] hover:bg-[#1c1b1b] font-['Inter'] text-sm tracking-wide uppercase font-medium" href="#">
-            <span className="material-symbols-outlined" data-icon="payments">
-              payments
-            </span>
-            <span>Send Payment</span>
-          </a>
-          {/* ACTIVE TAB: Payroll Batch */}
-          <a className="flex items-center px-4 py-3 space-x-3 transition-colors duration-200 text-[#00f5ff] font-bold border-r-2 border-[#00f5ff] font-['Inter'] text-sm tracking-wide uppercase font-medium bg-[#1c1b1b]/50" href="#">
-            <span className="material-symbols-outlined" data-icon="account_tree">
-              account_tree
-            </span>
-            <span>Payroll Batch</span>
-          </a>
-          <a className="flex items-center px-4 py-3 space-x-3 transition-colors duration-200 text-[#e5e2e1]/60 hover:text-[#e5e2e1] hover:bg-[#1c1b1b] font-['Inter'] text-sm tracking-wide uppercase font-medium" href="#">
-            <span className="material-symbols-outlined" data-icon="description">
-              description
-            </span>
-            <span>Invoices</span>
-          </a>
-          <a className="flex items-center px-4 py-3 space-x-3 transition-colors duration-200 text-[#e5e2e1]/60 hover:text-[#e5e2e1] hover:bg-[#1c1b1b] font-['Inter'] text-sm tracking-wide uppercase font-medium" href="#">
-            <span className="material-symbols-outlined" data-icon="history">
-              history
-            </span>
-            <span>History</span>
-          </a>
-          <a className="flex items-center px-4 py-3 space-x-3 transition-colors duration-200 text-[#e5e2e1]/60 hover:text-[#e5e2e1] hover:bg-[#1c1b1b] font-['Inter'] text-sm tracking-wide uppercase font-medium" href="#">
-            <span className="material-symbols-outlined" data-icon="vpn_key">
-              <Key />
-            </span>
-            <span>Viewing Keys</span>
-          </a>
-          <a className="flex items-center px-4 py-3 space-x-3 transition-colors duration-200 text-[#e5e2e1]/60 hover:text-[#e5e2e1] hover:bg-[#1c1b1b] font-['Inter'] text-sm tracking-wide uppercase font-medium" href="#">
-            <span className="material-symbols-outlined" data-icon="settings">
-              settings
-            </span>
-            <span>Settings</span>
-          </a>
-        </nav>
-        <div className="mt-auto p-4 bg-surface-container-low rounded-xl">
-          <div className="flex items-center space-x-3 mb-4">
-            <img
-              alt="User Profile"
-              className="w-10 h-10 rounded-full border border-outline-variant/30"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGVDeqQNFsIrnKnm5sN9EnWhv29enw1jOBHSJlgKwNW3cUYSm84yQeqSJHLigirzVH7KLTaKHyiBLJPbDQcTI4duQHfpi8tWu1jGN4qFlZJ8PUuxfEOVOTFcogFUuJEM-YT_dO8z4sUiGSmc0yiX7RzOHDx4ZbaT4TMjOvRATdZT6qx-SF7czw3E_41LA4zL0KqriUlM4tUddFhtYG61M72N7hWmMD7VRf8x25pOQqmAaA3YclrT4Gw3RUCz8kNqeX1bKrfLuF8Rw"
-            />
-            <div className="overflow-hidden">
-              <p className="text-xs font-bold text-on-surface truncate">
-                Corporate-Treasury-01
-              </p>
-              <p className="text-[10px] text-outline truncate uppercase tracking-tighter">
-                0x4F...E892
-              </p>
-            </div>
-          </div>
-          <button className="w-full py-2 bg-primary-container text-on-primary-container text-[10px] font-black uppercase tracking-widest rounded-lg hover:brightness-110 active:scale-95 transition-all">
-            Shield &amp; Send
-          </button>
-        </div>
-      </aside>
+      <SideBar />
       {/* Main Content Canvas */}
       <main className="flex-1 flex flex-col bg-surface overflow-hidden relative">
         {/* TopNavBar */}
@@ -139,24 +66,24 @@ export default function PayrollPage() {
           </div>
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-2 text-on-surface/60">
-              <span className="material-symbols-outlined text-sm" data-icon="shield">
-                shield
-              </span>
+              <Shield className="h-4 w-4" aria-hidden="true" />
               <span className="text-[10px] font-bold tracking-widest uppercase">
                 Mainnet Encryption Active
               </span>
             </div>
             <div className="flex items-center space-x-3">
-              <button className="material-symbols-outlined text-on-surface/60 hover:text-primary-container transition-colors" data-icon="notifications">
-                notifications
+              <button
+                type="button"
+                className="h-10 w-10 inline-flex items-center justify-center rounded-lg text-on-surface/60 hover:text-primary-container hover:bg-surface-container-high transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                aria-label="Notifications"
+              >
+                <Bell className="h-5 w-5" aria-hidden="true" />
               </button>
               <div className="h-4 w-[1px] bg-outline-variant/30"></div>
               <button className="px-4 py-1.5 border border-outline-variant text-[10px] font-bold tracking-widest uppercase rounded hover:bg-surface-container transition-colors">
                 Mainnet
               </button>
-              <button className="px-4 py-1.5 bg-primary-container text-on-primary-container text-[10px] font-bold tracking-widest uppercase rounded hover:brightness-110 active:opacity-80 transition-all">
-                Connect Wallet
-              </button>
+              <WalletConnectButton />
             </div>
           </div>
         </header>
@@ -188,9 +115,7 @@ export default function PayrollPage() {
               <div className="col-span-12 lg:col-span-5 space-y-6">
                 <div className="aspect-square lg:aspect-auto lg:h-[400px] bg-surface-container-low border-2 border-dashed border-outline-variant/30 rounded-xl flex flex-col items-center justify-center p-8 text-center hover:border-primary-container/40 transition-colors group">
                   <div className="w-16 h-16 bg-surface-container-high rounded-full flex items-center justify-center mb-6 group-hover:bg-primary-container/10 transition-colors">
-                    <span className="material-symbols-outlined text-4xl text-primary-container" data-icon="cloud_upload">
-                      cloud_upload
-                    </span>
+                    <CloudUpload className="h-10 w-10 text-primary-container" aria-hidden="true" />
                   </div>
                   <h4 className="text-lg font-bold text-on-surface">Upload Payroll CSV</h4>
                   <p className="text-sm text-outline mt-2 max-w-[240px]">
@@ -271,7 +196,7 @@ export default function PayrollPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-outline-variant/5">
-                      {payrollRows.map((row, i) => (
+                      {payrollRows.map((row) => (
                         <tr
                           key={row.initials + row.name}
                           className="hover:bg-surface-container-highest transition-colors"
@@ -298,9 +223,7 @@ export default function PayrollPage() {
                             {row.amount}
                           </td>
                           <td className="px-6 py-5 text-center">
-                            <span className="material-symbols-outlined text-tertiary-fixed-dim text-sm" data-icon={row.statusIcon}>
-                              {row.statusIcon}
-                            </span>
+                            <CheckCircle2 className="h-4 w-4 inline-block text-tertiary-fixed-dim" aria-label="Validated" />
                           </td>
                         </tr>
                       ))}
@@ -347,15 +270,11 @@ export default function PayrollPage() {
               </div>
               <div className="relative z-10 w-full md:w-auto flex flex-col md:flex-row gap-4">
                 <button className="px-8 py-5 border border-outline-variant/30 text-sm font-bold uppercase tracking-[0.2em] rounded-xl hover:bg-surface-container-high transition-all flex items-center justify-center space-x-3">
-                  <span className="material-symbols-outlined text-xl" data-icon="visibility">
-                    visibility
-                  </span>
+                  <Eye className="h-5 w-5" aria-hidden="true" />
                   <span>Simulate</span>
                 </button>
                 <button className="px-12 py-5 bg-gradient-to-br from-primary-container to-primary-fixed-dim text-on-primary-container text-sm font-black uppercase tracking-[0.2em] rounded-xl shadow-[0_0_40px_rgba(0,245,255,0.2)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center space-x-4">
-                  <span className="material-symbols-outlined" data-icon="lock" style={{ fontVariationSettings: "'FILL' 1" }}>
-                    lock
-                  </span>
+                  <Lock className="h-5 w-5" aria-hidden="true" />
                   <span>Execute Private Batch Transfer</span>
                 </button>
               </div>
@@ -365,9 +284,7 @@ export default function PayrollPage() {
         {/* Privacy Mesh Overlay (Bottom Corner Branding) */}
         <div className="absolute bottom-6 right-6 opacity-20 pointer-events-none">
           <div className="flex items-center space-x-2">
-            <span className="material-symbols-outlined text-4xl text-primary-container animate-pulse" data-icon="security">
-              security
-            </span>
+            <ShieldCheck className="h-10 w-10 text-primary-container animate-pulse" aria-hidden="true" />
             <div className="text-[10px] font-bold text-primary-container tracking-[0.3em] uppercase">
               Powered by Arez ZK-Shield
             </div>

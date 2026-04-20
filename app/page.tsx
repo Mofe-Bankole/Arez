@@ -1,5 +1,19 @@
-import { Diamond, EyeClosed, GitBranch, Key, LucideVerified, Shield } from "lucide-react";
-import Image from "next/image";
+"use client";
+import WalletConnectButton from "@/components/ConnectWalletButton";
+import {
+  BadgeCheck,
+  CheckCircle2,
+  Diamond,
+  GitBranch,
+  Key,
+  Mail,
+  Share2,
+  Shield,
+  ShieldCheck,
+  Sparkles,
+  Zap,
+  EyeOff,
+} from "lucide-react";
 
 export default function Home() {
   return (
@@ -7,12 +21,7 @@ export default function Home() {
       <nav className="sticky top-0 z-50 flex justify-between items-center px-8 w-full bg-[#131313]/70 backdrop-blur-xl h-16 shadow-[0_0_20px_rgba(0,245,255,0.04)]">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 flex items-center justify-center bg-primary-container rounded-lg">
-            <span
-              className="material-symbols-outlined text-on-primary-container"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              <Shield/>
-            </span>
+            <Shield className="h-5 w-5 text-on-primary-container" aria-hidden="true" />
           </div>
           <span className="text-xl font-black text-[#e9feff] tracking-tighter">
             Arez
@@ -45,24 +54,25 @@ export default function Home() {
           </a>
         </div>
         <div className="flex items-center gap-4">
-          <span className="font-['Inter'] text-[10px] font-bold tracking-[0.1em] uppercase text-tertiary-fixed-dim px-2 py-1 bg-tertiary-fixed-dim/10 rounded">
+          {/* <span className="font-['Inter'] text-[10px] font-bold tracking-[0.1em] uppercase text-tertiary-fixed-dim px-2 py-1 bg-tertiary-fixed-dim/10 rounded">
             Mainnet
-          </span>
-          <button className="px-5 py-2 glow-button text-on-primary-container font-bold text-xs uppercase tracking-wider rounded-md active:opacity-80 transition-all">
-            Connect Wallet
-          </button>
+          </span> */}
+         <WalletConnectButton/>
         </div>
       </nav>
 
       <main className="flex-1 w-full">
         {/* <!-- Hero Section --> */}
-        <section className="relative min-h-[921px] flex items-center justify-center pt-20 px-6">
+        <section className="relative min-h-[921px] flex flex-col items-center justify-center pt-24 pb-16 px-6">
           <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary-container/5 rounded-full blur-[120px]"></div>
             <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-tertiary-container/5 rounded-full blur-[100px]"></div>
           </div>
-          <div className="container mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-7 space-y-8">
+          <div className="container mx-auto relative z-10 flex flex-col items-center text-center max-w-5xl">
+            <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
+              <span className="font-['Inter'] text-[10px] font-bold tracking-[0.1em] uppercase text-tertiary-fixed-dim px-2 py-1 bg-tertiary-fixed-dim/10 rounded">
+                Mainnet
+              </span>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-highest border border-outline-variant/30">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-75"></span>
@@ -72,58 +82,52 @@ export default function Home() {
                   Stealth Intelligence Live
                 </span>
               </div>
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.9] text-primary uppercase">
-                Send Salaries <br />
-                <span className="text-primary-container">Privately</span> <br />
-                on Solana
-              </h1>
-              <p className="text-lg md:text-xl text-on-surface-variant max-w-xl font-light leading-relaxed">
-                Shield your payroll from the public ledger. Obfuscate amounts,
-                recipients, and timing while maintaining regulatory compliance
-                through zero-knowledge proofs.
+            </div>
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-[-0.04em] leading-[0.88] text-primary uppercase drop-shadow-[0_0_40px_rgba(0,245,255,0.12)]">
+              Send Salaries <br />
+              <span className="text-primary-container">Privately</span> <br />
+              on Solana
+            </h1>
+            <p className="mt-8 text-lg md:text-xl text-on-surface-variant max-w-2xl mx-auto font-light leading-relaxed">
+              Shield your payroll from the public ledger. Obfuscate amounts,
+              recipients, and timing while maintaining regulatory compliance
+              through zero-knowledge proofs.
+            </p>
+            <div className="flex flex-wrap gap-4 pt-10 justify-center">
+              <button className="px-10 py-4 glow-button text-on-primary-container font-black text-sm uppercase tracking-[0.2em] rounded-md hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_0_1px_rgba(0,245,255,0.15)]">
+                Shield &amp; Send
+              </button>
+              <button className="px-10 py-4 bg-transparent border border-outline-variant text-primary font-black text-sm uppercase tracking-[0.2em] rounded-md hover:bg-surface-container-high transition-all">
+                Try Demo
+              </button>
+            </div>
+            {/* <!-- Trust Signals --> */}
+            <div className="pt-16 w-full">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-outline mb-6">
+                Secured &amp; Powered By
               </p>
-              <div className="flex flex-wrap gap-4 pt-4">
-                <button className="px-8 py-4 glow-button text-on-primary-container font-black text-sm uppercase tracking-widest rounded-md hover:scale-[1.02] active:scale-95 transition-all">
-                  Shield &amp; Send
-                </button>
-                <button className="px-8 py-4 bg-transparent border border-outline-variant text-primary font-black text-sm uppercase tracking-widest rounded-md hover:bg-surface-container-high transition-all">
-                  Try Demo
-                </button>
-              </div>
-              {/* <!-- Trust Signals --> */}
-              <div className="pt-12">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-outline mb-6">
-                  Secured &amp; Powered By
-                </p>
-                <div className="flex flex-wrap gap-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-700">
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-2xl">
-                      <Diamond/>
-                    </span>
-                    <span className="font-bold tracking-tighter text-lg uppercase">
-                      Solana
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-2xl">
-                      visibility_off
-                    </span>
-                    <span className="font-bold tracking-tighter text-lg uppercase">
-                      Umbra
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-2xl">
-                      grain
-                    </span>
-                    <span className="font-bold tracking-tighter text-lg uppercase">
-                      Arcium
-                    </span>
-                  </div>
+              <div className="flex flex-wrap gap-8 sm:gap-12 justify-center opacity-60 grayscale hover:grayscale-0 transition-all duration-700">
+                <div className="flex items-center gap-2">
+                  <Diamond className="h-6 w-6" aria-hidden="true" />
+                  <span className="font-bold tracking-tighter text-lg uppercase">
+                    Solana
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <EyeOff className="h-6 w-6" aria-hidden="true" />
+                  <span className="font-bold tracking-tighter text-lg uppercase">
+                    Umbra
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-6 w-6" aria-hidden="true" />
+                  <span className="font-bold tracking-tighter text-lg uppercase">
+                    Arcium
+                  </span>
                 </div>
               </div>
             </div>
-            <div className="lg:col-span-5 relative hidden lg:block">
+            <div className="w-full max-w-md lg:max-w-lg mt-16 lg:mt-20 mx-auto relative">
               {/* <!-- Asymmetric Bento Card for Hero Visual --> */}
               <div className="relative w-full aspect-square glass-panel rounded-xl p-1 bg-gradient-to-br from-outline-variant/20 to-transparent">
                 <div className="bg-surface-container-lowest h-full w-full rounded-xl p-8 flex flex-col justify-between overflow-hidden relative">
@@ -138,12 +142,7 @@ export default function Home() {
                         </div>
                       </div>
                       <div className="w-12 h-12 rounded-full border border-primary-container/20 flex items-center justify-center">
-                        <span
-                          className="material-symbols-outlined text-primary-container"
-                          style={{ fontVariationSettings: "'FILL' 1" }}
-                        >
-                          security
-                        </span>
+                        <ShieldCheck className="h-6 w-6 text-primary-container" aria-hidden="true" />
                       </div>
                     </div>
                     <div className="space-y-4">
@@ -172,6 +171,7 @@ export default function Home() {
                   </div>
                   <div className="relative h-32 w-full mt-8 bg-surface-container overflow-hidden rounded-lg">
                     <img
+                      alt=""
                       className="w-full h-full object-cover mix-blend-overlay opacity-40"
                       data-alt="abstract visualization of digital network data streams in glowing cyan and dark obsidian background representing secure encrypted transmissions"
                       src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpc1pZLYM3He6DzcarPAoVL4g5Z5BeJMPX8AIrKRrJCCfcFHmKvynuBcNy4_qIbEaFtx65kpEwTia5WWIEax0Bfb02yRztDbgJbpxjTbQpQXx4U-pM_4HXRvkqS6MsnL_P9q-vWbYcfruBPIev9ZUzvXeT8Jqe3GJ8eAD4oUmWpE2l5aOMC3Y83zCcg-JcmBq55_vNG3d_lOi0__vDTby6EWux6PqTvGjDE0aNodFGhq0rFlsy23TlX5FoXYctzOo8zaeCi_Gcy7o"
@@ -209,16 +209,14 @@ export default function Home() {
               {/* <!-- Feature 1 --> */}
               <div className="md:col-span-2 bg-surface-container p-10 rounded-xl relative overflow-hidden group">
                 <div className="relative z-10 space-y-6">
-                  <span className="material-symbols-outlined text-4xl text-primary-container">
-                    <EyeClosed/>
-                  </span>
+                <EyeOff className="h-10 w-10 text-primary-container" aria-hidden="true" />
                   <h3 className="text-3xl font-black uppercase tracking-tight">
                     Shielded Transactions
                   </h3>
                   <p className="text-on-surface-variant text-lg leading-relaxed max-w-md">
                     Every payroll run is processed through our privacy layer,
-                    disconnecting the sender's public identity from the
-                    recipient's wallet. Hide amounts, timing, and internal team
+                    disconnecting the sender&apos;s public identity from the
+                    recipient&apos;s wallet. Hide amounts, timing, and internal team
                     hierarchies from curious competitors.
                   </p>
                 </div>
@@ -226,9 +224,7 @@ export default function Home() {
               </div>
               {/* <!-- Feature 2 --> */}
               <div className="bg-surface-container-high p-10 rounded-xl space-y-6 flex flex-col justify-center">
-                <span className="material-symbols-outlined text-4xl text-tertiary-fixed-dim">
-                  <Key/>
-                </span>
+                <Key className="h-10 w-10 text-tertiary-fixed-dim" aria-hidden="true" />
                 <h3 className="text-xl font-bold uppercase tracking-tight">
                   Viewing Keys
                 </h3>
@@ -240,15 +236,12 @@ export default function Home() {
               </div>
               {/* <!-- Feature 3 --> */}
               <div className="bg-surface-container-high p-10 rounded-xl space-y-6 flex flex-col justify-center">
-                <span className="material-symbols-outlined text-4xl text-primary-container">
-                  speed
-                  
-                </span>
+                <Zap className="h-10 w-10 text-primary-container" aria-hidden="true" />
                 <h3 className="text-xl font-bold uppercase tracking-tight">
                   Solana Speed
                 </h3>
                 <p className="text-sm text-on-surface-variant leading-relaxed">
-                  Privacy doesn't have to be slow. Leveraging the
+                  Privacy doesn&apos;t have to be slow. Leveraging the
                   high-throughput architecture of Solana, Arez processes
                   thousands of private payments in seconds with sub-cent fees.
                 </p>
@@ -257,9 +250,7 @@ export default function Home() {
               <div className="md:col-span-2 bg-surface-container-low p-1 p-px rounded-xl bg-gradient-to-r from-outline-variant/30 to-transparent">
                 <div className="bg-surface-container-low h-full w-full rounded-xl p-10 flex flex-col md:flex-row gap-10 items-center">
                   <div className="flex-1 space-y-6">
-                    <span className="material-symbols-outlined text-4xl text-primary-container">
-                      <GitBranch/>
-                    </span>
+                    <GitBranch className="h-10 w-10 text-primary-container" aria-hidden="true" />
                     <h3 className="text-3xl font-black uppercase tracking-tight">
                       Batch Efficiency
                     </h3>
@@ -320,25 +311,19 @@ export default function Home() {
               </p>
               <ul className="space-y-4">
                 <li className="flex items-start gap-4">
-                  <span className="material-symbols-outlined text-primary-container">
-                    check_circle
-                  </span>
+                  <CheckCircle2 className="h-5 w-5 text-primary-container mt-0.5" aria-hidden="true" />
                   <span className="text-on-surface">
                     Zero-Knowledge proof of tax withholdings
                   </span>
                 </li>
                 <li className="flex items-start gap-4">
-                  <span className="material-symbols-outlined text-primary-container">
-                    check_circle
-                  </span>
+                  <CheckCircle2 className="h-5 w-5 text-primary-container mt-0.5" aria-hidden="true" />
                   <span className="text-on-surface">
                     Automated W-8/W-9 collection in encrypted vaults
                   </span>
                 </li>
                 <li className="flex items-start gap-4">
-                  <span className="material-symbols-outlined text-primary-container">
-                    check_circle
-                  </span>
+                  <CheckCircle2 className="h-5 w-5 text-primary-container mt-0.5" aria-hidden="true" />
                   <span className="text-on-surface">
                     Auditor-only portal with hardware key access
                   </span>
@@ -349,6 +334,7 @@ export default function Home() {
               <div className="absolute inset-0 bg-primary-container/20 blur-[100px] rounded-full"></div>
               <div className="relative glass-panel bg-surface-container-high/40 rounded-2xl p-8 border border-primary-container/10">
                 <img
+                  alt=""
                   className="rounded-xl object-cover w-full aspect-video grayscale opacity-80 mix-blend-screen"
                   data-alt="high-tech secure server room with glowing green and blue status lights and architectural server racks in a dark environment"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7sEbgKU09g-nPYzdn4beXG6PUUaGS7l8Nn3xOhrHAuJfn_37KJDPtLql9lds3ipXmA0Ba-dj5kUUlWm9lRR4SORhVAa57_zhSCEikbFdEbVC3PPpwIddCjAMn9l3bGP1XBc8ooAqto8lHCH9PyB9_oNFqANSd-Izeunbn6n5hx1KqBkJMujAUt_21LUeON_32z4Zn-yeFrhB_447FgAtSZ6BwrobxwskEp0RBddGozJrBv0O8W2urylovxSOAWLS5-tiUJ3alqHs"
@@ -362,30 +348,36 @@ export default function Home() {
                       AES-256-GCM + ZK-SNARKs
                     </div>
                   </div>
-                  <span className="material-symbols-outlined text-4xl text-primary-container">
-                    {/* verified_user */}
-                    <LucideVerified/>
-                  </span>
+                  <BadgeCheck className="h-10 w-10 text-primary-container" aria-hidden="true" />
                 </div>
               </div>
             </div>
           </div>
         </section>
         {/* <!-- CTA Section --> */}
-        <section className="py-20 px-6 bg-primary-container/5 border-y border-outline-variant/10">
-          <div className="container mx-auto text-center space-y-10 max-w-4xl">
-            <h2 className="text-4xl md:text-7xl font-black uppercase tracking-tighter italic">
-              Ready to go incognito?
+        <section className="relative py-24 md:py-32 px-6 overflow-hidden bg-primary-container/5 border-y border-outline-variant/10">
+          <div
+            className="pointer-events-none absolute left-1/2 top-1/2 h-[min(100vw,640px)] w-[min(100vw,640px)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary-container/10 blur-[100px] opacity-60"
+            aria-hidden
+          />
+          <div className="container relative mx-auto flex max-w-4xl flex-col items-center text-center">
+            <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-primary-container">
+              Start in seconds
+            </p>
+            <h2 className="mt-5 text-4xl font-black uppercase leading-[0.92] tracking-[-0.03em] text-primary sm:text-5xl md:text-6xl lg:text-7xl drop-shadow-[0_0_48px_rgba(0,245,255,0.14)]">
+              Ready to go{" "}
+              <span className="text-primary-container">incognito?</span>
             </h2>
-            <p className="text-xl text-on-surface-variant max-w-2xl mx-auto">
+            <p className="mt-8 max-w-2xl text-lg md:text-xl leading-relaxed text-on-surface-variant">
               Join 200+ organizations moving their payroll to the shadows of the
               Solana ecosystem.
             </p>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <button className="px-12 py-6 glow-button text-on-primary-container font-black text-lg uppercase tracking-widest rounded-md transition-all hover:scale-105">
-                Connect Your Wallet
-              </button>
-              <button className="px-12 py-6 bg-surface-container-highest text-primary font-black text-lg uppercase tracking-widest rounded-md border border-outline-variant transition-all hover:bg-surface-container">
+            <div className="mt-12 flex w-full max-w-lg flex-col gap-4 sm:flex-row sm:justify-center sm:gap-5">
+              <WalletConnectButton />
+              <button
+                type="button"
+                className="w-full px-10 py-5 bg-surface-container-highest text-primary font-black text-base uppercase tracking-[0.2em] rounded-md border border-outline-variant transition-all hover:bg-surface-container sm:w-auto sm:min-w-[240px]"
+              >
                 Book a Demo
               </button>
             </div>
@@ -398,12 +390,7 @@ export default function Home() {
           <div className="col-span-2 space-y-6">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 flex items-center justify-center bg-primary-container rounded-lg">
-                <span
-                  className="material-symbols-outlined text-on-primary-container"
-                  style={{ fontVariationSettings: "'FILL' 1" }}
-                >
-                  shield
-                </span>
+                <Shield className="h-5 w-5 text-on-primary-container" aria-hidden="true" />
               </div>
               <span className="text-2xl font-black text-[#e9feff] tracking-tighter">
                 Arez
@@ -414,14 +401,20 @@ export default function Home() {
               Built for security, designed for stealth.
             </p>
             <div className="flex gap-4">
-              <div className="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center text-outline hover:text-primary-container hover:border-primary-container transition-all cursor-pointer">
-                <span className="material-symbols-outlined">
-                  alternate_email
-                </span>
-              </div>
-              <div className="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center text-outline hover:text-primary-container hover:border-primary-container transition-all cursor-pointer">
-                <span className="material-symbols-outlined">share</span>
-              </div>
+              <button
+                type="button"
+                className="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center text-outline hover:text-primary-container hover:border-primary-container transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                aria-label="Email"
+              >
+                <Mail className="h-5 w-5" aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                className="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center text-outline hover:text-primary-container hover:border-primary-container transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                aria-label="Share"
+              >
+                <Share2 className="h-5 w-5" aria-hidden="true" />
+              </button>
             </div>
           </div>
           <div className="space-y-6">
@@ -504,4 +497,4 @@ export default function Home() {
       </footer>
     </div>
   );
-  }
+}
