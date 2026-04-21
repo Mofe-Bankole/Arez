@@ -182,7 +182,7 @@ export default function PayrollPage() {
                     <thead>
                       <tr className="bg-surface-container-highest/50">
                         <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-outline">
-                          Recipient
+                          Recipient 
                         </th>
                         <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-outline">
                           Department

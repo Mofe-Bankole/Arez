@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 export default function WalletConnectButton(){
     const { label, handleClick, connected, connecting } = useArezWallet();
     const [copied, setCopied] = useState(false);
-
     useEffect(() => {
       if (!copied) return;
       const t = window.setTimeout(() => setCopied(false), 900);
@@ -16,7 +15,6 @@ export default function WalletConnectButton(){
         onClick={async () => {
           if (connecting) return;
           await handleClick();
-          if (connected) setCopied(true);
         }}
         onContextMenu={async (e) => {
           // Right-click: disconnect (escape hatch without extra UI).

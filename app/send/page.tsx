@@ -1,25 +1,33 @@
 "use client"
-import "../globals.css";
-import SideBar from "@/components/Sidebar";
 import WalletConnectButton from "@/components/ConnectWalletButton";
-import {
-  BadgeCheck,
-  Bell,
-  ChevronDown,
-  HelpCircle,
-  Info,
-  KeyRound,
-  Lock,
-  Shield,
-  UserSearch,
-} from "lucide-react";
+import Sidebar from "@/components/Sidebar";
+// import { WalletConnectButton } from "@solana/wallet-adapter-react-ui";
+import { BadgeCheck, Bell, ChevronDown, HelpCircle, Info, KeyRound, Lock, Shield, UserSearch } from "lucide-react";
+import * as React from "react";
 
 export default function Send() {
+  // Only state: include all state vars for the send form and related UI
+  const [recipient, setRecipient] = React.useState("");
+  const [amount, setAmount] = React.useState("");
+  const [currency, setCurrency] = React.useState<"USDC">("USDC");
+  const [memo, setMemo] = React.useState("");
+  const [shield, setShield] = React.useState(true);
+  const [attachViewingKey, setAttachViewingKey] = React.useState(false);
+
+  const [submitting, setSubmitting] = React.useState(false);
+  const [result, setResult] = React.useState<
+    | { status: "idle" }
+    | { status: "ok"; sig: string }
+    | { status: "error"; message: string }
+  >({ status: "idle" });
+
+  
+
   return (
     <div className="flex h-screen w-full">
-      <SideBar />
+      <Sidebar />
       <main className="flex-1 flex flex-col bg-surface-dim overflow-y-auto relative">
-        <header className="sticky top-0 z-50 flex justify-between items-center px-8 w-full h-16 bg-[#131313]/70 backdrop-blur-xl shadow-[0_0_20px_rgba(0,245,255,0.04)]">
+        <header className="sticky top-0 z-50 flex justify-between items-center px-8 w-full h-60 bg-[#131313]/70 backdrop-blur-xl shadow-[0_0_20px_rgba(0,245,255,0.04)]">
           <div className="flex items-center gap-6">
             <h1 className="text-xl font-black text-[#e9feff] tracking-tighter uppercase">
               Send Payment
@@ -69,6 +77,8 @@ export default function Send() {
                 </label>
                 <div className="relative">
                   <input
+                  value={recipient}
+                  onChange={(e) => setRecipient(e.target.value)}
                     className="w-full bg-surface-container-highest border border-outline-variant/25 rounded-xl py-4 pl-4 pr-12 text-on-surface placeholder:text-outline-variant/60 focus:outline-none focus:ring-2 focus:ring-primary-container/35 focus:border-primary-container/40 transition-all font-body text-sm"
                     placeholder="Solana Address or ENS Name"
                     type="text"
@@ -85,14 +95,15 @@ export default function Send() {
                   </label>
                   <div className="relative">
                     <input
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
                       className="w-full bg-surface-container-highest border border-outline-variant/25 rounded-xl py-4 pl-4 pr-12 text-on-surface placeholder:text-outline-variant/60 focus:outline-none focus:ring-2 focus:ring-primary-container/35 focus:border-primary-container/40 transition-all font-body text-sm"
                       placeholder="0.00"
-                      type="number"
+                      inputMode="decimal"
+                      type="text"
                     />
                     <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                      <span className="text-[10px] font-black text-primary-fixed-dim uppercase tracking-tighter">
-                        MAX
-                      </span>
+                     
                     </div>
                   </div>
                 </div>
@@ -101,10 +112,12 @@ export default function Send() {
                     Currency
                   </label>
                   <div className="relative">
-                    <select className="w-full bg-surface-container-highest border border-outline-variant/25 rounded-xl py-4 pl-4 pr-11 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container/35 focus:border-primary-container/40 transition-all font-body text-sm appearance-none cursor-pointer">
-                      <option>USDC (SPL-Token)</option>
-                      <option>SOL (Native)</option>
-                      <option>AREZ (Privacy Token)</option>
+                    <select
+                      value={currency}
+                      onChange={(e) => setCurrency(e.target.value as "USDC")}
+                      className="w-full bg-surface-container-highest border border-outline-variant/25 rounded-xl py-4 pl-4 pr-11 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container/35 focus:border-primary-container/40 transition-all font-body text-sm appearance-none cursor-pointer"
+                    >
+                      <option value="USDC">USDC (SPL-Token)</option>
                     </select>
                     <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-outline-variant" aria-hidden="true" />
                   </div>
@@ -115,6 +128,8 @@ export default function Send() {
                   Private Memo (Encrypted)
                 </label>
                 <textarea
+                  value={memo}
+                  onChange={(e) => setMemo(e.target.value)}
                   className="w-full min-h-[120px] bg-surface-container-highest border border-outline-variant/25 rounded-xl py-4 px-4 text-on-surface placeholder:text-outline-variant/60 focus:outline-none focus:ring-2 focus:ring-primary-container/35 focus:border-primary-container/40 transition-all font-body text-sm resize-none"
                   placeholder="Add a secure note to this transaction..."
                 ></textarea>
@@ -135,7 +150,12 @@ export default function Send() {
                     </div>
                   </div>
                   <label className="relative inline-flex cursor-pointer items-center">
-                    <input className="peer sr-only" type="checkbox" />
+                    <input
+                      className="peer sr-only"
+                      type="checkbox"
+                      checked={shield}
+                      onChange={(e) => setShield(e.target.checked)}
+                    />
                     <div className="relative inline-block h-6 w-11 shrink-0 rounded-full bg-surface-container-highest after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-focus:outline-2 peer-focus:outline-offset-2 peer-focus:outline-primary-container/40 peer-checked:bg-primary-container peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white"></div>
                   </label>
                 </div>
@@ -154,16 +174,33 @@ export default function Send() {
                     </div>
                   </div>
                   <label className="relative inline-flex cursor-pointer items-center">
-                    <input className="peer sr-only" type="checkbox" />
+                    <input
+                      className="peer sr-only"
+                      type="checkbox"
+                      checked={attachViewingKey}
+                      onChange={(e) => setAttachViewingKey(e.target.checked)}
+                    />
                     <div className="relative inline-block h-6 w-11 shrink-0 rounded-full bg-surface-container-highest after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-focus:outline-2 peer-focus:outline-offset-2 peer-focus:outline-primary-container/40 peer-checked:bg-primary-container peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white"></div>
                   </label>
                 </div>
               </div>
+              {result.status === "error" && (
+                <div className="rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3 text-sm text-red-200">
+                  {result.message}
+                </div>
+              )}
+              {result.status === "ok" && (
+                <div className="rounded-xl border border-tertiary-fixed-dim/20 bg-tertiary-fixed-dim/5 px-4 py-3 text-sm text-tertiary">
+                  Submitted. Signature:{" "}
+                  <span className="font-mono tabular-nums">{result.sig}</span>
+                </div>
+              )}
               <button
-                className="w-full py-5 stealth-glow text-on-primary-container rounded-xl font-black text-sm uppercase tracking-[0.2em] shadow-[0_0_30px_rgba(0,245,255,0.2)] hover:scale-[1.01] active:scale-95 transition-all duration-200 mt-4"
+                className="w-full py-5 stealth-glow text-on-primary-container rounded-xl font-black text-sm uppercase tracking-[0.2em] shadow-[0_0_30px_rgba(0,245,255,0.2)] hover:scale-[1.01] active:scale-95 transition-all duration-200 mt-4 disabled:opacity-60 disabled:cursor-not-allowed"
                 type="button"
+               
               >
-                Shield &amp; Send
+                {submitting ? "Shielding…" : "Shield & Send"}
               </button>
             </form>
           </div>

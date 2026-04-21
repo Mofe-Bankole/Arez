@@ -21,7 +21,10 @@ export default function Home() {
       <nav className="sticky top-0 z-50 flex justify-between items-center px-8 w-full bg-[#131313]/70 backdrop-blur-xl h-16 shadow-[0_0_20px_rgba(0,245,255,0.04)]">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 flex items-center justify-center bg-primary-container rounded-lg">
-            <Shield className="h-5 w-5 text-on-primary-container" aria-hidden="true" />
+            <Shield
+              className="h-5 w-5 text-on-primary-container"
+              aria-hidden="true"
+            />
           </div>
           <span className="text-xl font-black text-[#e9feff] tracking-tighter">
             Arez
@@ -30,34 +33,34 @@ export default function Home() {
         <div className="hidden md:flex gap-8 items-center">
           <a
             className="font-['Inter'] text-xs font-bold tracking-[0.05em] uppercase text-[#e5e2e1] hover:text-[#00f5ff] transition-all duration-300"
-            href="#"
+            href="/dashboard"
           >
-            Technology
+            Dashboard
           </a>
           <a
             className="font-['Inter'] text-xs font-bold tracking-[0.05em] uppercase text-[#e5e2e1] hover:text-[#00f5ff] transition-all duration-300"
-            href="#"
+            href="/send"
           >
-            Privacy
+            Send
           </a>
           <a
             className="font-['Inter'] text-xs font-bold tracking-[0.05em] uppercase text-[#e5e2e1] hover:text-[#00f5ff] transition-all duration-300"
-            href="#"
+            href="/invoices"
           >
-            Compliance
+            Invoices
           </a>
           <a
             className="font-['Inter'] text-xs font-bold tracking-[0.05em] uppercase text-[#e5e2e1] hover:text-[#00f5ff] transition-all duration-300"
-            href="#"
+            href="payroll"
           >
-            Documentation
+            Payroll
           </a>
         </div>
         <div className="flex items-center gap-4">
           {/* <span className="font-['Inter'] text-[10px] font-bold tracking-[0.1em] uppercase text-tertiary-fixed-dim px-2 py-1 bg-tertiary-fixed-dim/10 rounded">
             Mainnet
           </span> */}
-         <WalletConnectButton/>
+          <WalletConnectButton />
         </div>
       </nav>
 
@@ -107,24 +110,42 @@ export default function Home() {
                 Secured &amp; Powered By
               </p>
               <div className="flex flex-wrap gap-8 sm:gap-12 justify-center opacity-60 grayscale hover:grayscale-0 transition-all duration-700">
-                <div className="flex items-center gap-2">
-                  <Diamond className="h-6 w-6" aria-hidden="true" />
+                <a className="flex items-center gap-2" href="https://solana.com/">
+                  <img
+                    src="https://solana.com/src/img/branding/solanaLogoMark.svg"
+                    alt="Solana Logo"
+                    className="h-6 w-auto"
+                    style={{ display: "inline-block", verticalAlign: "middle" }}
+                  />
+
                   <span className="font-bold tracking-tighter text-lg uppercase">
                     Solana
                   </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <EyeOff className="h-6 w-6" aria-hidden="true" />
+                </a>
+                <a className="flex items-center gap-2 cursor-pointer" href="https://www.umbraprivacy.com/">
+                  <img
+                    src="https://mintcdn.com/umbraprivacy/8hktEtsVSIFo5XLc/logo/dark.svg?fit=max&auto=format&n=8hktEtsVSIFo5XLc&q=85&s=c9d5da458a3678e035eaf6e5a17efbe8"
+                    alt="Umbra Logo"
+                    className="h-6 w-auto"
+                    style={{ display: "inline-block", verticalAlign: "middle" }}
+                  />
+
                   <span className="font-bold tracking-tighter text-lg uppercase">
                     Umbra
                   </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Sparkles className="h-6 w-6" aria-hidden="true" />
+                </a>
+                <a className="flex items-center gap-2" href="https://www.arcium.com/">
+                  <img
+                    src="https://cdn.prod.website-files.com/67086aa28c40f80ff00c0a83/67086aa28c40f80ff00c0ad0_Logomark.svg"
+                    alt="Arcium Logo"
+                    className="h-6 w-auto"
+                    style={{ display: "inline-block", verticalAlign: "middle" }}
+                  />
+
                   <span className="font-bold tracking-tighter text-lg uppercase">
                     Arcium
                   </span>
-                </div>
+                </a>
               </div>
             </div>
             <div className="w-full max-w-md lg:max-w-lg mt-16 lg:mt-20 mx-auto relative">
@@ -142,7 +163,10 @@ export default function Home() {
                         </div>
                       </div>
                       <div className="w-12 h-12 rounded-full border border-primary-container/20 flex items-center justify-center">
-                        <ShieldCheck className="h-6 w-6 text-primary-container" aria-hidden="true" />
+                        <ShieldCheck
+                          className="h-6 w-6 text-primary-container"
+                          aria-hidden="true"
+                        />
                       </div>
                     </div>
                     <div className="space-y-4">
@@ -209,22 +233,28 @@ export default function Home() {
               {/* <!-- Feature 1 --> */}
               <div className="md:col-span-2 bg-surface-container p-10 rounded-xl relative overflow-hidden group">
                 <div className="relative z-10 space-y-6">
-                <EyeOff className="h-10 w-10 text-primary-container" aria-hidden="true" />
+                  <EyeOff
+                    className="h-10 w-10 text-primary-container"
+                    aria-hidden="true"
+                  />
                   <h3 className="text-3xl font-black uppercase tracking-tight">
                     Shielded Transactions
                   </h3>
                   <p className="text-on-surface-variant text-lg leading-relaxed max-w-md">
                     Every payroll run is processed through our privacy layer,
                     disconnecting the sender&apos;s public identity from the
-                    recipient&apos;s wallet. Hide amounts, timing, and internal team
-                    hierarchies from curious competitors.
+                    recipient&apos;s wallet. Hide amounts, timing, and internal
+                    team hierarchies from curious competitors.
                   </p>
                 </div>
                 <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-primary-container/5 rounded-full blur-3xl group-hover:bg-primary-container/10 transition-all duration-700"></div>
               </div>
               {/* <!-- Feature 2 --> */}
               <div className="bg-surface-container-high p-10 rounded-xl space-y-6 flex flex-col justify-center">
-                <Key className="h-10 w-10 text-tertiary-fixed-dim" aria-hidden="true" />
+                <Key
+                  className="h-10 w-10 text-tertiary-fixed-dim"
+                  aria-hidden="true"
+                />
                 <h3 className="text-xl font-bold uppercase tracking-tight">
                   Viewing Keys
                 </h3>
@@ -236,7 +266,10 @@ export default function Home() {
               </div>
               {/* <!-- Feature 3 --> */}
               <div className="bg-surface-container-high p-10 rounded-xl space-y-6 flex flex-col justify-center">
-                <Zap className="h-10 w-10 text-primary-container" aria-hidden="true" />
+                <Zap
+                  className="h-10 w-10 text-primary-container"
+                  aria-hidden="true"
+                />
                 <h3 className="text-xl font-bold uppercase tracking-tight">
                   Solana Speed
                 </h3>
@@ -250,7 +283,10 @@ export default function Home() {
               <div className="md:col-span-2 bg-surface-container-low p-1 p-px rounded-xl bg-gradient-to-r from-outline-variant/30 to-transparent">
                 <div className="bg-surface-container-low h-full w-full rounded-xl p-10 flex flex-col md:flex-row gap-10 items-center">
                   <div className="flex-1 space-y-6">
-                    <GitBranch className="h-10 w-10 text-primary-container" aria-hidden="true" />
+                    <GitBranch
+                      className="h-10 w-10 text-primary-container"
+                      aria-hidden="true"
+                    />
                     <h3 className="text-3xl font-black uppercase tracking-tight">
                       Batch Efficiency
                     </h3>
@@ -311,19 +347,28 @@ export default function Home() {
               </p>
               <ul className="space-y-4">
                 <li className="flex items-start gap-4">
-                  <CheckCircle2 className="h-5 w-5 text-primary-container mt-0.5" aria-hidden="true" />
+                  <CheckCircle2
+                    className="h-5 w-5 text-primary-container mt-0.5"
+                    aria-hidden="true"
+                  />
                   <span className="text-on-surface">
                     Zero-Knowledge proof of tax withholdings
                   </span>
                 </li>
                 <li className="flex items-start gap-4">
-                  <CheckCircle2 className="h-5 w-5 text-primary-container mt-0.5" aria-hidden="true" />
+                  <CheckCircle2
+                    className="h-5 w-5 text-primary-container mt-0.5"
+                    aria-hidden="true"
+                  />
                   <span className="text-on-surface">
                     Automated W-8/W-9 collection in encrypted vaults
                   </span>
                 </li>
                 <li className="flex items-start gap-4">
-                  <CheckCircle2 className="h-5 w-5 text-primary-container mt-0.5" aria-hidden="true" />
+                  <CheckCircle2
+                    className="h-5 w-5 text-primary-container mt-0.5"
+                    aria-hidden="true"
+                  />
                   <span className="text-on-surface">
                     Auditor-only portal with hardware key access
                   </span>
@@ -348,7 +393,10 @@ export default function Home() {
                       AES-256-GCM + ZK-SNARKs
                     </div>
                   </div>
-                  <BadgeCheck className="h-10 w-10 text-primary-container" aria-hidden="true" />
+                  <BadgeCheck
+                    className="h-10 w-10 text-primary-container"
+                    aria-hidden="true"
+                  />
                 </div>
               </div>
             </div>
@@ -390,7 +438,10 @@ export default function Home() {
           <div className="col-span-2 space-y-6">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 flex items-center justify-center bg-primary-container rounded-lg">
-                <Shield className="h-5 w-5 text-on-primary-container" aria-hidden="true" />
+                <Shield
+                  className="h-5 w-5 text-on-primary-container"
+                  aria-hidden="true"
+                />
               </div>
               <span className="text-2xl font-black text-[#e9feff] tracking-tighter">
                 Arez

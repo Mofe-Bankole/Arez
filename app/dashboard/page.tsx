@@ -4,7 +4,7 @@ import "../globals.css";
 import SideBar from "@/components/Sidebar";
 import WalletConnectButton from "@/components/ConnectWalletButton";
 import { useBalances } from "@/hooks/useBalances";
-import { useWallet } from "@solana/wallet-adapter-react";
+import useArezWallet from "@/hooks/useWallet";
 import {
   Bell,
   Eye,
@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 
 export default function Dashboard() {
-  const { connected, publicKey } = useWallet();
+  const { connected, publicKey } = useArezWallet();
   const balances = useBalances();
 
   const addressLabel = connected && publicKey
@@ -49,18 +49,19 @@ export default function Dashboard() {
             <div className="flex items-center space-x-2 bg-surface-container-high px-3 py-1.5 rounded-full">
               <span className="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
               <span className="font-['Inter'] text-xs font-bold tragecking-[0.05em] text-[#e5e2e1]">
-                Mainnet
+                {process.env.NODE_ENV}
               </span>
             </div>
           </div>
           <div className="flex items-center space-x-6">
             <div className="hidden sm:flex items-center gap-2">
               <div className="bg-surface-container-highest px-3 py-1.5 rounded-lg border border-outline-variant/20">
-                <span className="font-mono tabular-nums text-xs font-bold tracking-[0.05em] uppercase text-primary">
+                {/* <span className="font-mono tabular-nums text-xs font-bold tracking-[0.05em] uppercase text-primary">
                   {addressLabel}
-                </span>
+                </span> */}
               </div>
               <WalletConnectButton />
+              <p>sssw</p>
             </div>
             <div className="flex space-x-4">
               <button

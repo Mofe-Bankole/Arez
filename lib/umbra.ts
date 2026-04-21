@@ -1,20 +1,31 @@
-import { getUmbraClient } from "@umbra-privacy/sdk";
+import { getWallets } from "@wallet-standard/app";
+import { StandardConnect } from "@wallet-standard/features";
+import {
+  createSignerFromWalletAccount,
+  getUmbraClient,
+} from "@umbra-privacy/sdk";
 
-export const UMBRA_CONFIG = {
-  network: "devnet" as const,
+const { get } = getWallets();
+const solanaWallets = get().filter((w) => {
+  const features = Object.keys(w.features);
+  return (
+    features.includes("solana:signTransaction") &&
+    features.includes("solana:signMessage")
+  );
+});
+
+const wallet = solanaWallets[0];
+const connectFeature = wallet.features[StandardConnect];
+const { accounts } = await (connectFeature as any).connect();
+const account = accounts[0];
+
+const signer = createSignerFromWalletAccount(wallet, account);
+
+export const UmbraClient = await getUmbraClient({
+  signer,
+  network: "mainnet",
   rpcUrl: "https://api.devnet.solana.com",
   rpcSubscriptionsUrl: "wss://api.devnet.solana.com",
   indexerApiEndpoint: "https://utxo-indexer.api.umbraprivacy.com",
-};
-
-type GetUmbraClientArgs = Parameters<typeof getUmbraClient>[0];
-
-export type UmbraClient = Awaited<ReturnType<typeof getUmbraClient>>;
-
-export async function createUmbraClient(args: Pick<GetUmbraClientArgs, "signer">) {
-  return getUmbraClient({
-    signer: args.signer,
-    ...UMBRA_CONFIG,
-    deferMasterSeedSignature: true,
-  });
-}
+  deferMasterSeedSignature: true,
+});
