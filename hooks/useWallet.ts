@@ -1,3 +1,4 @@
+import { UmbraClient } from "@/lib/umbra";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { getUserRegistrationFunction } from "@umbra-privacy/sdk";
@@ -7,7 +8,11 @@ export default function useArezWallet() {
   const { setVisible } = useWalletModal();
 
   const openWalletModal = () => setVisible(true);
-  const register = getUserRegistrationFunction({client : cl})
+  const register = getUserRegistrationFunction({client : UmbraClient})
+
+  const signatures = await register({
+
+  })
   const handleClick = async (opts?: { disconnect?: boolean }) => {
     if (connected) disconnect;
 
