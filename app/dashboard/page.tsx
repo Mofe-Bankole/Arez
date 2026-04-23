@@ -94,7 +94,7 @@ export default function Dashboard() {
                 {balances.status === "loading"
                   ? "Syncing balances…"
                   : balances.status === "error"
-                    ? `Balance sync failed: ${balances.message}`
+                    ? `Failed To Fetch Balances`
                     : connected
                       ? "Status: Active & Encrypted"
                       : "Connect your wallet to view live balances."}

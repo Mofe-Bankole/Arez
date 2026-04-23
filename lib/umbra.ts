@@ -13,8 +13,9 @@ export async function createUmbraClientFromWallet() {
   const solanaWallets = wallets.filter((w) => {
     const features = Object.keys(w.features || {});
     return (
+      w.name === "Solflare" &&
       features.includes("solana:signTransaction") &&
-      features.includes("solana:signMessage")
+      features.includes("solana:signMessage") 
     );
   });
 
@@ -24,7 +25,7 @@ export async function createUmbraClientFromWallet() {
     );
   }
   console.log(solanaWallets)
-  const wallet = solanaWallets[1];
+  const wallet = solanaWallets[0];
 
   // Connect if not already connected
   const connectFeature = wallet.features?.[StandardConnect];

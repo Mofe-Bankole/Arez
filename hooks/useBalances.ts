@@ -4,6 +4,7 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { useEffect, useMemo, useState } from "react";
 import { USDC_MINT_DEVNET } from "@/lib/constants";
+import { createSolanaRpc } from "@solana/kit";
 
 type BalancesState =
   | { status: "disconnected" }
@@ -77,3 +78,4 @@ export function useBalances(opts?: { pollMs?: number }) {
   return state;
 }
 
+export const kitRPC = createSolanaRpc("https://api.devnet.solana.com")

@@ -1,14 +1,18 @@
 "use client"
 import WalletConnectButton from "@/components/ConnectWalletButton";
 import Sidebar from "@/components/Sidebar";
-// import { WalletConnectButton } from "@solana/wallet-adapter-react-ui";
+import { kitRPC } from "@/hooks/useBalances";
+import useArezWallet from "@/hooks/useWallet";
+import { address, lamports } from "@solana/kit";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { BadgeCheck, Bell, ChevronDown, HelpCircle, Info, KeyRound, Lock, Shield, UserSearch } from "lucide-react";
 import * as React from "react";
 
 export default function Send() {
+  const {publicKey} = useArezWallet()
   // Only state: include all state vars for the send form and related UI
   const [recipient, setRecipient] = React.useState("");
-  const [amount, setAmount] = React.useState("");
+  const [amount, setAmount] = React.useState<number>(0);
   const [currency, setCurrency] = React.useState<"USDC">("USDC");
   const [memo, setMemo] = React.useState("");
   const [shield, setShield] = React.useState(true);
@@ -21,7 +25,19 @@ export default function Send() {
     | { status: "error"; message: string }
   >({ status: "idle" });
 
+  // const handlePrivatePayment= () => {
+  //   const zkProver =getCreateClaim 
+  // }
+  // function handnctlePublicPayment() => {}
   
+  const handlePublicPayment =() => {
+    const fromPubkey = publicKey;
+    const beneficiary = address(recipient)
+    const solamount = lamports(BigInt(amount + LAMPORTS_PER_SOL))
+
+    const latestblockhash = kitRPC.getLatestBlockhash().send()
+    console.log(latestblockhash)
+  }
 
   return (
     <div className="flex h-screen w-full">
@@ -96,7 +112,7 @@ export default function Send() {
                   <div className="relative">
                     <input
                       value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
+                      // onChange={(e) => setAmount(e.target.value)}
                       className="w-full bg-surface-container-highest border border-outline-variant/25 rounded-xl py-4 pl-4 pr-12 text-on-surface placeholder:text-outline-variant/60 focus:outline-none focus:ring-2 focus:ring-primary-container/35 focus:border-primary-container/40 transition-all font-body text-sm"
                       placeholder="0.00"
                       inputMode="decimal"
