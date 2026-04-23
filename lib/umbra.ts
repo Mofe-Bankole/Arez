@@ -41,7 +41,7 @@ export async function createUmbraClientFromWallet() {
   const account = accounts[0];
 
   const signer = createSignerFromWalletAccount(wallet, account);
-
+  
   return await getUmbraClient({
     signer,
     network: "devnet", 

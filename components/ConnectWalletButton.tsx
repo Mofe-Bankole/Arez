@@ -1,6 +1,4 @@
-// components/ConnectWalletButton.tsx
 "use client";
-
 import useArezWallet from "@/hooks/useWallet";
 import { useUmbraClient } from "@/hooks/useUmbraClient";
 import { handleUmbraRegistration } from "@/lib/registerUser";
@@ -32,6 +30,7 @@ export default function WalletConnectButton() {
     if (connected && umbraClient) {
       try {
         await handleUmbraRegistration();
+        console.log("Testing Clicked Again")
       } catch (err) {
         console.error(err);
       }
@@ -72,7 +71,7 @@ export default function WalletConnectButton() {
       }
     >
       {copied && connected
-        ? "Copied!"
+        ? "Copied By The Dev!"
         : umbraLoading
           ? "Initializing Umbra..."
           : label}

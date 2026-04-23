@@ -3,7 +3,7 @@ import WalletConnectButton from "@/components/ConnectWalletButton";
 import Sidebar from "@/components/Sidebar";
 import { kitRPC } from "@/hooks/useBalances";
 import useArezWallet from "@/hooks/useWallet";
-import { address, lamports } from "@solana/kit";
+import { address, createTransactionMessage, lamports, pipe, setTransactionMessageFeePayer, setTransactionMessageFeePayerSigner } from "@solana/kit";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { BadgeCheck, Bell, ChevronDown, HelpCircle, Info, KeyRound, Lock, Shield, UserSearch } from "lucide-react";
 import * as React from "react";
@@ -25,19 +25,6 @@ export default function Send() {
     | { status: "error"; message: string }
   >({ status: "idle" });
 
-  // const handlePrivatePayment= () => {
-  //   const zkProver =getCreateClaim 
-  // }
-  // function handnctlePublicPayment() => {}
-  
-  const handlePublicPayment =() => {
-    const fromPubkey = publicKey;
-    const beneficiary = address(recipient)
-    const solamount = lamports(BigInt(amount + LAMPORTS_PER_SOL))
-
-    const latestblockhash = kitRPC.getLatestBlockhash().send()
-    console.log(latestblockhash)
-  }
 
   return (
     <div className="flex h-screen w-full">

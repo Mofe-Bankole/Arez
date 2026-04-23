@@ -1,5 +1,6 @@
 "use client";
 import WalletConnectButton from "@/components/ConnectWalletButton";
+import { useWallet } from "@solana/wallet-adapter-react";
 import {
   BadgeCheck,
   CheckCircle2,
@@ -14,8 +15,13 @@ import {
   Zap,
   EyeOff,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter()
+  const {publicKey} = useWallet()
+
+  if(!publicKey) router.push("/dashboard")
   return (
     <div className="flex flex-col min-h-screen bg-zinc-50 dark:bg-black">
       <nav className="sticky top-0 z-50 flex justify-between items-center px-8 w-full bg-[#131313]/70 backdrop-blur-xl h-16 shadow-[0_0_20px_rgba(0,245,255,0.04)]">

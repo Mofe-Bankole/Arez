@@ -114,7 +114,7 @@ export default function Sidebar() {
           </div>
         ) : (
           <div className="text-lg font-black tracking-tighter text-primary" aria-label="Arez">
-            A
+            
           </div>
         )}
 

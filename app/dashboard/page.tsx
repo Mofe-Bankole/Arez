@@ -61,7 +61,6 @@ export default function Dashboard() {
                 </span> */}
               </div>
               <WalletConnectButton />
-              <p>sssw</p>
             </div>
             <div className="flex space-x-4">
               <button

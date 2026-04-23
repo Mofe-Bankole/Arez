@@ -10,6 +10,7 @@ export default function useArezWallet() {
   const handleClick = async (opts?: { disconnect?: boolean }) => {
     if (connected) {
       console.log(connected);
+      
       disconnect;
     }
 
