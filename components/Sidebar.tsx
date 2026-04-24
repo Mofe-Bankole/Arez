@@ -56,11 +56,12 @@ export default function Sidebar() {
       icon: <GitBranch className="h-5 w-5" aria-hidden="true" />,
       match: (p) => p === "/payroll",
     },
-    {
-      href: "/invoices",
-      label: "Invoices",
-      icon: <Receipt className="h-5 w-5" aria-hidden="true" />,
-    },
+    // Page is Currently Unavailable
+    // {
+    //   href: "/invoices",
+    //   label: "Invoices",
+    //   icon: <Receipt className="h-5 w-5" aria-hidden="true" />,
+    // },
     {
       href: "/history",
       label: "History",
@@ -104,18 +105,26 @@ export default function Sidebar() {
       ].join(" ")}
       aria-label="Sidebar"
     >
-      <div className={["mb-6 flex items-center", collapsed ? "justify-center" : "justify-between px-2"].join(" ")}>
+      <div
+        className={[
+          "mb-6 flex items-center",
+          collapsed ? "justify-center" : "justify-between px-2",
+        ].join(" ")}
+      >
         {!collapsed ? (
           <div>
-            <div className="text-2xl font-black tracking-tighter text-primary">Arez</div>
+            <div className="text-2xl font-black tracking-tighter text-primary">
+              Arez
+            </div>
             <div className="text-xs tracking-[0.16em] uppercase font-bold text-on-surface-variant/60 mt-1">
               Privacy-First Payroll
             </div>
           </div>
         ) : (
-          <div className="text-lg font-black tracking-tighter text-primary" aria-label="Arez">
-            
-          </div>
+          <div
+            className="text-lg font-black tracking-tighter text-primary"
+            aria-label="Arez"
+          ></div>
         )}
 
         <button
@@ -128,7 +137,11 @@ export default function Sidebar() {
           ].join(" ")}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          {collapsed ? <ChevronRight className="h-5 w-5" aria-hidden="true" /> : <ChevronLeft className="h-5 w-5" aria-hidden="true" />}
+          {collapsed ? (
+            <ChevronRight className="h-5 w-5" aria-hidden="true" />
+          ) : (
+            <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+          )}
         </button>
       </div>
 
@@ -188,7 +201,9 @@ export default function Sidebar() {
               />
             </div>
             <div className="flex flex-col overflow-hidden">
-              <span className="text-xs font-bold text-primary tracking-wider truncate">SECURE_NODE_01</span>
+              <span className="text-xs font-bold text-primary tracking-wider truncate">
+                SECURE_NODE_01
+              </span>
               <span className="text-[10px] text-on-surface-variant uppercase tracking-tighter truncate">
                 Identity Shielded
               </span>

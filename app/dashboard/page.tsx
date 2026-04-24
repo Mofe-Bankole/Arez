@@ -4,7 +4,7 @@ import "../globals.css";
 import SideBar from "@/components/Sidebar";
 import WalletConnectButton from "@/components/ConnectWalletButton";
 import { useBalances } from "@/hooks/useBalances";
-import useArezWallet from "@/hooks/useWallet";
+// import useArezWallet from "@/hooks/useWallet";
 import {
   Bell,
   Eye,
@@ -15,9 +15,10 @@ import {
   Coins,
   RefreshCw,
 } from "lucide-react";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 export default function Dashboard() {
-  const { connected, publicKey } = useArezWallet();
+  const { connected, publicKey } = useWallet()
   const balances = useBalances();
 
   const addressLabel = connected && publicKey

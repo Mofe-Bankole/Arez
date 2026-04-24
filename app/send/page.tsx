@@ -1,16 +1,31 @@
-"use client"
+"use client";
 import WalletConnectButton from "@/components/ConnectWalletButton";
 import Sidebar from "@/components/Sidebar";
 import { kitRPC } from "@/hooks/useBalances";
-import useArezWallet from "@/hooks/useWallet";
-import { address, createTransactionMessage, lamports, pipe, setTransactionMessageFeePayer, setTransactionMessageFeePayerSigner } from "@solana/kit";
+// import useArezWallet from "@/hooks/useWallet";
+import {
+  address,
+  createTransactionMessage,
+  lamports,
+  pipe,
+  setTransactionMessageFeePayer,
+  setTransactionMessageFeePayerSigner,
+} from "@solana/kit";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
-import { BadgeCheck, Bell, ChevronDown, HelpCircle, Info, KeyRound, Lock, Shield, UserSearch } from "lucide-react";
+import {
+  BadgeCheck,
+  Bell,
+  ChevronDown,
+  HelpCircle,
+  Info,
+  KeyRound,
+  Lock,
+  Shield,
+  UserSearch,
+} from "lucide-react";
 import * as React from "react";
 
 export default function Send() {
-  const {publicKey} = useArezWallet()
-  // Only state: include all state vars for the send form and related UI
   const [recipient, setRecipient] = React.useState("");
   const [amount, setAmount] = React.useState<number>(0);
   const [currency, setCurrency] = React.useState<"USDC">("USDC");
@@ -24,7 +39,6 @@ export default function Send() {
     | { status: "ok"; sig: string }
     | { status: "error"; message: string }
   >({ status: "idle" });
-
 
   return (
     <div className="flex h-screen w-full">
@@ -80,14 +94,17 @@ export default function Send() {
                 </label>
                 <div className="relative">
                   <input
-                  value={recipient}
-                  onChange={(e) => setRecipient(e.target.value)}
+                    value={recipient}
+                    onChange={(e) => setRecipient(e.target.value)}
                     className="w-full bg-surface-container-highest border border-outline-variant/25 rounded-xl py-4 pl-4 pr-12 text-on-surface placeholder:text-outline-variant/60 focus:outline-none focus:ring-2 focus:ring-primary-container/35 focus:border-primary-container/40 transition-all font-body text-sm"
                     placeholder="Solana Address or ENS Name"
                     type="text"
                   />
                   <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                    <UserSearch className="h-5 w-5 text-outline-variant" aria-hidden="true" />
+                    <UserSearch
+                      className="h-5 w-5 text-outline-variant"
+                      aria-hidden="true"
+                    />
                   </div>
                 </div>
               </div>
@@ -99,15 +116,13 @@ export default function Send() {
                   <div className="relative">
                     <input
                       value={amount}
-                      // onChange={(e) => setAmount(e.target.value)}
+                      onChange={(e) => setAmount(Number(e.target.value))}
                       className="w-full bg-surface-container-highest border border-outline-variant/25 rounded-xl py-4 pl-4 pr-12 text-on-surface placeholder:text-outline-variant/60 focus:outline-none focus:ring-2 focus:ring-primary-container/35 focus:border-primary-container/40 transition-all font-body text-sm"
                       placeholder="0.00"
                       inputMode="decimal"
                       type="text"
                     />
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                     
-                    </div>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2"></div>
                   </div>
                 </div>
                 <div className="group">
@@ -122,7 +137,10 @@ export default function Send() {
                     >
                       <option value="USDC">USDC (SPL-Token)</option>
                     </select>
-                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-outline-variant" aria-hidden="true" />
+                    <ChevronDown
+                      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-outline-variant"
+                      aria-hidden="true"
+                    />
                   </div>
                 </div>
               </div>
@@ -141,7 +159,10 @@ export default function Send() {
                 <div className="flex items-center justify-between p-4 bg-surface-container-low rounded-xl border border-outline-variant/10">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center">
-                      <BadgeCheck className="h-5 w-5 text-primary-container" aria-hidden="true" />
+                      <BadgeCheck
+                        className="h-5 w-5 text-primary-container"
+                        aria-hidden="true"
+                      />
                     </div>
                     <div>
                       <div className="text-sm font-bold text-on-surface">
@@ -165,7 +186,10 @@ export default function Send() {
                 <div className="flex items-center justify-between p-4 bg-surface-container-low rounded-xl border border-outline-variant/10">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-on-surface-variant/10 flex items-center justify-center">
-                      <KeyRound className="h-5 w-5 text-on-surface-variant" aria-hidden="true" />
+                      <KeyRound
+                        className="h-5 w-5 text-on-surface-variant"
+                        aria-hidden="true"
+                      />
                     </div>
                     <div>
                       <div className="text-sm font-bold text-on-surface">
@@ -201,7 +225,6 @@ export default function Send() {
               <button
                 className="w-full py-5 stealth-glow text-on-primary-container rounded-xl font-black text-sm uppercase tracking-[0.2em] shadow-[0_0_30px_rgba(0,245,255,0.2)] hover:scale-[1.01] active:scale-95 transition-all duration-200 mt-4 disabled:opacity-60 disabled:cursor-not-allowed"
                 type="button"
-               
               >
                 {submitting ? "Shielding…" : "Shield & Send"}
               </button>
@@ -221,7 +244,10 @@ export default function Send() {
                 <div className="relative z-10 space-y-8">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-tertiary-container/20 flex items-center justify-center">
-                      <Lock className="h-4 w-4 text-tertiary-fixed-dim" aria-hidden="true" />
+                      <Lock
+                        className="h-4 w-4 text-tertiary-fixed-dim"
+                        aria-hidden="true"
+                      />
                     </div>
                     <span className="text-[10px] font-black text-tertiary-fixed-dim uppercase tracking-[0.2em]">
                       Transaction Security
@@ -264,7 +290,10 @@ export default function Send() {
                     </div>
                   </div>
                   <div className="p-4 bg-primary-container/5 rounded-xl border border-primary-container/20 flex items-start gap-3">
-                    <Info className="h-5 w-5 text-primary-container mt-0.5" aria-hidden="true" />
+                    <Info
+                      className="h-5 w-5 text-primary-container mt-0.5"
+                      aria-hidden="true"
+                    />
                     <span className="text-[11px] text-on-surface-variant leading-tight">
                       By proceeding, you are minting a non-custodial
                       zero-knowledge certificate for this asset transfer.
@@ -275,7 +304,10 @@ export default function Send() {
               <div className="bg-surface-container-low rounded-xl p-6 border border-outline-variant/10">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-surface-container-highest rounded-lg">
-                    <HelpCircle className="h-5 w-5 text-outline" aria-hidden="true" />
+                    <HelpCircle
+                      className="h-5 w-5 text-outline"
+                      aria-hidden="true"
+                    />
                   </div>
                   <div>
                     <div className="text-sm font-bold text-on-surface">
