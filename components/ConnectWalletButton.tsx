@@ -45,7 +45,6 @@ export default function WalletConnectButton() {
       try {
         select("Solflare");
         await connect();
-   
       } catch (err) {
         console.error("Failed to connect wallet:", err);
       }
@@ -87,7 +86,7 @@ export default function WalletConnectButton() {
     const doRegistration = async () => {
       if (connected && umbraClient) {
         try {
-          await handleUmbraRegistration();
+          await handleUmbraRegistration({ umbraClient });
         } catch (err) {
           console.error("Umbra registration failed:", err);
         }
@@ -120,14 +119,14 @@ export default function WalletConnectButton() {
       {connecting
         ? "Connecting..."
         : umbraLoading
-        ? "Loading..."
-        : connected && publicKey
-        ? copied
-          ? "Copied!"
-          : `${publicKey.toBase58().slice(0, 4)}...${publicKey
-              .toBase58()
-              .slice(-4)}`
-        : "Connect Wallet"}
+          ? "Loading..."
+          : connected && publicKey
+            ? copied
+              ? "Copied!"
+              : `${publicKey.toBase58().slice(0, 4)}...${publicKey
+                  .toBase58()
+                  .slice(-4)}`
+            : "Connect Wallet"}
     </button>
   );
 }

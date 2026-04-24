@@ -1,10 +1,9 @@
 "use client";
 
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import { useEffect, useMemo, useState } from "react";
 import { USDC_MINT_DEVNET } from "@/lib/constants";
-import { createSolanaRpc } from "@solana/kit";
 
 type BalancesState =
   | { status: "disconnected" }
@@ -34,7 +33,9 @@ export function useBalances(opts?: { pollMs?: number }) {
     let cancelled = false;
 
     const fetchOnce = async () => {
-      setState((prev) => (prev.status === "ready" ? prev : { status: "loading" }));
+      setState((prev) =>
+        prev.status === "ready" ? prev : { status: "loading" },
+      );
 
       try {
         const [lamports, tokenAccounts] = await Promise.all([
@@ -46,7 +47,7 @@ export function useBalances(opts?: { pollMs?: number }) {
           ),
         ]);
 
-        const sol = lamports / 1e9;
+        const sol = lamports / LAMPORTS_PER_SOL;
 
         const usdc = tokenAccounts.value.reduce((sum, acc) => {
           const parsed = acc.account.data.parsed;
@@ -77,5 +78,3 @@ export function useBalances(opts?: { pollMs?: number }) {
 
   return state;
 }
-
-export const kitRPC = createSolanaRpc("https://api.devnet.solana.com")

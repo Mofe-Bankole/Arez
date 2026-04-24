@@ -13,9 +13,8 @@ export async function createUmbraClientFromWallet() {
   const solanaWallets = wallets.filter((w) => {
     const features = Object.keys(w.features || {});
     return (
-      w.name === "Solflare" &&
       features.includes("solana:signTransaction") &&
-      features.includes("solana:signMessage") 
+      features.includes("solana:signMessage")
     );
   });
 
@@ -24,7 +23,6 @@ export async function createUmbraClientFromWallet() {
       "No compatible Solana wallet found. Please connect a wallet.",
     );
   }
-  console.log(solanaWallets)
   const wallet = solanaWallets[0];
 
   // Connect if not already connected
@@ -41,12 +39,12 @@ export async function createUmbraClientFromWallet() {
   const account = accounts[0];
 
   const signer = createSignerFromWalletAccount(wallet, account);
-  
+
   return await getUmbraClient({
     signer,
-    network: "devnet", 
-    rpcUrl: "https://api.devnet.solana.com", 
-    rpcSubscriptionsUrl: "wss://api.devnet.solana.com",
+    network: "mainnet", // change to "devnet" if testing
+    rpcUrl: "https://api.mainnet-beta.solana.com", // Use proper mainnet RPC
+    rpcSubscriptionsUrl: "wss://api.mainnet-beta.solana.com",
     indexerApiEndpoint: "https://utxo-indexer.api.umbraprivacy.com",
     deferMasterSeedSignature: true,
   });

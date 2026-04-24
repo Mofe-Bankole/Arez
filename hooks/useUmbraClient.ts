@@ -13,7 +13,8 @@ export function useUmbraClient() {
     setError(null);
     try {
       const client = await createUmbraClientFromWallet();
-      console.log(`CLIENT VERSIONS : ${client.versions}`);
+      console.log(`CLIENT VERSIONS : ${client}`);
+      console.log(client);
       setUmbraClient(client);
     } catch (err: any) {
       setError(err.message || "Failed To Initialize Umbra Client");

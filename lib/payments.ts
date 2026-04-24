@@ -27,7 +27,7 @@ export type ArezTransactionPayload = {
 
 export async function sendPrivatePayment() {}
 
-export async function sendPublicPayment(payload: PaymentRequest) {
+export async function SendPublicPayment(payload: PaymentRequest) {
   const { publicKey, sendTransaction } = useWallet();
   const { connection } = useConnection();
 
@@ -64,6 +64,7 @@ export async function sendPublicPayment(payload: PaymentRequest) {
       error: "Transfer Mode Set to Private",
     };
 
+  console.log(payload);
   try {
     const recipient = new PublicKey(payload.recipient);
     const lamports = payload.amount * LAMPORTS_PER_SOL;
@@ -101,13 +102,12 @@ export async function sendPublicPayment(payload: PaymentRequest) {
   } catch (err: any) {
     console.error(`${err}`);
     return {
-      status: "successful",
-      id: signature,
+      status: "failed",
+      id: "",
       explorer: `https://solscan.io`,
       signer: publicKey.toString(),
       network: "devnet",
       chain: "solana",
     };
-  } finally {
   }
 }

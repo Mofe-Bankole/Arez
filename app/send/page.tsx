@@ -1,17 +1,7 @@
 "use client";
 import WalletConnectButton from "@/components/ConnectWalletButton";
 import Sidebar from "@/components/Sidebar";
-import { kitRPC } from "@/hooks/useBalances";
-// import useArezWallet from "@/hooks/useWallet";
-import {
-  address,
-  createTransactionMessage,
-  lamports,
-  pipe,
-  setTransactionMessageFeePayer,
-  setTransactionMessageFeePayerSigner,
-} from "@solana/kit";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { SendPublicPayment } from "@/lib/payments";
 import {
   BadgeCheck,
   Bell,
@@ -40,6 +30,19 @@ export default function Send() {
     | { status: "error"; message: string }
   >({ status: "idle" });
 
+  const handleSend = () => {
+    console.log(recipient);
+    console.log(amount);
+    console.log(shield);
+    if (!shield)
+      SendPublicPayment({
+        mode: "public",
+        recipient: recipient,
+        network: "devnet",
+        chain: "solana",
+        amount: amount,
+      });
+  };
   return (
     <div className="flex h-screen w-full">
       <Sidebar />
@@ -225,6 +228,7 @@ export default function Send() {
               <button
                 className="w-full py-5 stealth-glow text-on-primary-container rounded-xl font-black text-sm uppercase tracking-[0.2em] shadow-[0_0_30px_rgba(0,245,255,0.2)] hover:scale-[1.01] active:scale-95 transition-all duration-200 mt-4 disabled:opacity-60 disabled:cursor-not-allowed"
                 type="button"
+                onClick={handleSend}
               >
                 {submitting ? "Shielding…" : "Shield & Send"}
               </button>

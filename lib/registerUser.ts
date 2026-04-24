@@ -1,16 +1,24 @@
 "use client";
-import { useUmbraClient } from "@/hooks/useUmbraClient";
+
 import { getUserRegistrationFunction } from "@umbra-privacy/sdk";
-// import { UmbraClient } from "./umbra";
 
-export async function handleUmbraRegistration() {
-  const { umbraClient } = useUmbraClient();
-  const register = getUserRegistrationFunction({ client: umbraClient });
+export async function handleUmbraRegistration(umbraClient: any) {
+  if (!umbraClient) {
+    console.error("UmbraClient is not initialized yet");
+    return;
+  }
 
-  const signatures = await register({
-    confidential: true,
-    anonymous: true,
-  });
+  try {
+    const register = getUserRegistrationFunction({ client: umbraClient });
 
-  console.log(signatures);
-}
+    const signatures = await register({
+      confidential: true,
+      anonymous: true,
+    });
+
+    console.log(`REGISTRATION SIGNATURES : ${signatures}`)
+    return signatures;
+  } catch (error) {
+    console.error("Umbra registration failed:", error);
+    throw error;
+  }
