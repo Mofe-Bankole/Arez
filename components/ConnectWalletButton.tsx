@@ -22,6 +22,7 @@ export default function WalletConnectButton() {
     resetClient,
   } = useUmbraClient();
   const [copied, setCopied] = useState(false);
+  const [hasRegistered, setHasRegistered] = useState(false);
 
   // init Umbra silently after wallet connects
   useEffect(() => {
@@ -44,16 +45,16 @@ export default function WalletConnectButton() {
     return () => clearTimeout(timer);
   }, [connected]);
 
-  // register after client is ready
   useEffect(() => {
-    if (!ready || !umbraClient) return;
+    if (!ready || !umbraClient || hasRegistered) return;
 
-    handleUmbraRegistration({ umbraClient }).catch((err) => {
-      console.error("Registration failed:", err);
-    });
-  }, [ready]); // ← fires once when ready flips to true
+    handleUmbraRegistration({ umbraClient })
+      .then(() => setHasRegistered(true))
+      .catch((err) => {
+        console.error("Registration failed:", err);
+      });
+  }, [ready, umbraClient, hasRegistered]);
 
-  // copy address on click when connected
   const copyAddress = useCallback(async () => {
     if (!publicKey) return;
     await navigator.clipboard.writeText(publicKey.toBase58());

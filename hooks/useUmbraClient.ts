@@ -21,7 +21,7 @@ export function useUmbraClient() {
       const client = await createUmbraClientFromWallet();
       setUmbraClient(client);
       setReady(true);
-      console.log("✅ Umbra client initialized");
+      console.log("✅ Umbra Client Initialized");
     } catch (err: any) {
       setError(err.message || "Failed to initialize Umbra client");
       console.error("Umbra client init failed:", err);

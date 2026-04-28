@@ -1,20 +1,26 @@
 import { getUserRegistrationFunction } from "@umbra-privacy/sdk";
+import { getUserRegistrationProver } from "@umbra-privacy/web-zk-prover";
 
 type Props = {
   umbraClient: any;
 };
 
+const prover = getUserRegistrationProver();
 export async function handleUmbraRegistration({ umbraClient }: Props) {
   try {
-    const register = getUserRegistrationFunction({ client: umbraClient });
+    const register = getUserRegistrationFunction(
+      { client: umbraClient },
+      { zkProver: prover },
+    );
 
     // register() is idempotent — safe to call even if already registered
-    await register({
+    const regis = await register({
       confidential: true, // hide balance
-      anonymous: true, // hide identity
+      anonymous: true,
     });
 
     console.log("✅ UMBRA REGISTRATION COMPLETE");
+    console.log(regis);
     return { success: true };
   } catch (err: any) {
     // "already registered" is not a real error — swallow it
