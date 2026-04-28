@@ -3,7 +3,15 @@
 import React from "react";
 import SideBar from "@/components/Sidebar";
 import WalletConnectButton from "@/components/ConnectWalletButton";
-import { Bell, CheckCircle2, CloudUpload, Eye, Lock, Shield, ShieldCheck } from "lucide-react";
+import {
+  Bell,
+  CheckCircle2,
+  CloudUpload,
+  Eye,
+  Lock,
+  Shield,
+  ShieldCheck,
+} from "lucide-react";
 
 const payrollRows = [
   {
@@ -57,7 +65,7 @@ export default function PayrollPage() {
         {/* TopNavBar */}
         <header className="sticky top-0 z-50 flex justify-between items-center px-8 w-full h-16 bg-[#131313]/70 backdrop-blur-xl shadow-[0_0_20px_rgba(0,245,255,0.04)] border-b-0">
           <div className="flex items-center space-x-4">
-            <h2 className="text-xl font-black text-[#e9feff] tracking-tighter">
+            <h2 className="text-xl font-black text-primary tracking-tighter">
               Arez
             </h2>
             <span className="px-2 py-1 bg-surface-container-highest rounded text-[10px] font-bold text-primary-container tracking-widest uppercase">
@@ -79,7 +87,7 @@ export default function PayrollPage() {
               >
                 <Bell className="h-5 w-5" aria-hidden="true" />
               </button>
-              <div className="h-4 w-[1px] bg-outline-variant/30"></div>
+              <div className="h-4 w-px bg-outline-variant/30"></div>
               <button className="px-4 py-1.5 border border-outline-variant text-[10px] font-bold tracking-widest uppercase rounded hover:bg-surface-container transition-colors">
                 Mainnet
               </button>
@@ -97,11 +105,12 @@ export default function PayrollPage() {
                   Batch Payroll
                 </h3>
                 <p className="text-on-surface-variant font-medium text-sm mt-1">
-                  Execute high-volume private transfers with zero knowledge proofs.
+                  Execute high-volume private transfers with zero knowledge
+                  proofs.
                 </p>
               </div>
               <div className="flex items-center space-x-4 bg-surface-container-low p-2 rounded-xl border border-outline-variant/10">
-                <span className="text-[10px] font-bold tracking-[0.1em] uppercase text-on-surface/50">
+                <span className="text-[10px] font-bold tracking-widest uppercase text-on-surface/50">
                   Shield All Transfers
                 </span>
                 <div className="relative inline-flex h-6 w-11 items-center rounded-full bg-primary-container/20 border border-primary-container/40">
@@ -115,11 +124,17 @@ export default function PayrollPage() {
               <div className="col-span-12 lg:col-span-5 space-y-6">
                 <div className="aspect-square lg:aspect-auto lg:h-[400px] bg-surface-container-low border-2 border-dashed border-outline-variant/30 rounded-xl flex flex-col items-center justify-center p-8 text-center hover:border-primary-container/40 transition-colors group">
                   <div className="w-16 h-16 bg-surface-container-high rounded-full flex items-center justify-center mb-6 group-hover:bg-primary-container/10 transition-colors">
-                    <CloudUpload className="h-10 w-10 text-primary-container" aria-hidden="true" />
+                    <CloudUpload
+                      className="h-10 w-10 text-primary-container"
+                      aria-hidden="true"
+                    />
                   </div>
-                  <h4 className="text-lg font-bold text-on-surface">Upload Payroll CSV</h4>
+                  <h4 className="text-lg font-bold text-on-surface">
+                    Upload Payroll CSV
+                  </h4>
                   <p className="text-sm text-outline mt-2 max-w-[240px]">
-                    Drag and drop your payroll template or click to browse files.
+                    Drag and drop your payroll template or click to browse
+                    files.
                   </p>
                   <div className="mt-8 flex flex-col space-y-3 w-full max-w-[200px]">
                     <button className="w-full py-3 bg-surface-container-highest text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-surface-bright transition-colors">
@@ -138,19 +153,31 @@ export default function PayrollPage() {
                   </h4>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center pb-4 border-b border-outline-variant/10">
-                      <span className="text-xs text-outline">Total Recipients</span>
-                      <span className="text-xl font-bold font-['Inter'] tracking-tight">142</span>
+                      <span className="text-xs text-outline">
+                        Total Recipients
+                      </span>
+                      <span className="text-xl font-bold font-['Inter'] tracking-tight">
+                        142
+                      </span>
                     </div>
                     <div className="flex justify-between items-center pb-4 border-b border-outline-variant/10">
                       <span className="text-xs text-outline">Gross Amount</span>
                       <span className="text-xl font-bold font-['Inter'] tracking-tight text-on-surface">
-                        84,200.00 <span className="text-[10px] text-outline font-medium">USDC</span>
+                        84,200.00{" "}
+                        <span className="text-[10px] text-outline font-medium">
+                          USDC
+                        </span>
                       </span>
                     </div>
                     <div className="flex justify-between items-center pb-4 border-b border-outline-variant/10">
-                      <span className="text-xs text-outline">Shielding Fees (Network)</span>
+                      <span className="text-xs text-outline">
+                        Shielding Fees (Network)
+                      </span>
                       <span className="text-xl font-bold font-['Inter'] tracking-tight text-tertiary-fixed-dim">
-                        12.40 <span className="text-[10px] text-outline font-medium uppercase">ETH</span>
+                        12.40{" "}
+                        <span className="text-[10px] text-outline font-medium uppercase">
+                          ETH
+                        </span>
                       </span>
                     </div>
                     <div className="flex justify-between items-center pt-2">
@@ -182,7 +209,7 @@ export default function PayrollPage() {
                     <thead>
                       <tr className="bg-surface-container-highest/50">
                         <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-outline">
-                          Recipient 
+                          Recipient
                         </th>
                         <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-outline">
                           Department
@@ -223,7 +250,10 @@ export default function PayrollPage() {
                             {row.amount}
                           </td>
                           <td className="px-6 py-5 text-center">
-                            <CheckCircle2 className="h-4 w-4 inline-block text-tertiary-fixed-dim" aria-label="Validated" />
+                            <CheckCircle2
+                              className="h-4 w-4 inline-block text-tertiary-fixed-dim"
+                              aria-label="Validated"
+                            />
                           </td>
                         </tr>
                       ))}
@@ -284,7 +314,10 @@ export default function PayrollPage() {
         {/* Privacy Mesh Overlay (Bottom Corner Branding) */}
         <div className="absolute bottom-6 right-6 opacity-20 pointer-events-none">
           <div className="flex items-center space-x-2">
-            <ShieldCheck className="h-10 w-10 text-primary-container animate-pulse" aria-hidden="true" />
+            <ShieldCheck
+              className="h-10 w-10 text-primary-container animate-pulse"
+              aria-hidden="true"
+            />
             <div className="text-[10px] font-bold text-primary-container tracking-[0.3em] uppercase">
               Powered by Arez ZK-Shield
             </div>

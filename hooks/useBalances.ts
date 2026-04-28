@@ -4,6 +4,7 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import { useEffect, useMemo, useState } from "react";
 import { USDC_MINT_DEVNET } from "@/lib/constants";
+import { config } from "@/lib/config";
 
 type BalancesState =
   | { status: "disconnected" }

@@ -1,8 +1,8 @@
 "use client";
-import { useUmbraClient } from "@/hooks/useUmbraClient";
-import { handleUmbraRegistration } from "@/lib/registerUser";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useUmbraClient } from "@/hooks/useUmbraClient";
+import { handleUmbraRegistration } from "@/lib/umbraRegister";
 
 export default function WalletConnectButton() {
   const {
@@ -11,122 +11,126 @@ export default function WalletConnectButton() {
     publicKey,
     connect,
     disconnect,
-    select, // in case wallet selection is needed
+    select,
+    wallets,
   } = useWallet();
-
   const {
     umbraClient,
     loading: umbraLoading,
-    error: umbraError,
+    ready,
     initializeClient,
+    resetClient,
   } = useUmbraClient();
-
   const [copied, setCopied] = useState(false);
 
-  // Auto-initialize Umbra client once wallet is connected
+  // init Umbra silently after wallet connects
   useEffect(() => {
     if (connected && !umbraClient && !umbraLoading) {
       initializeClient();
     }
-  }, [connected, umbraClient, umbraLoading, initializeClient]);
-
-  // Reset copied state after 1.5s
-  useEffect(() => {
-    if (copied) {
-      const timeout = setTimeout(() => setCopied(false), 1500);
-      return () => clearTimeout(timeout);
+    if (!connected) {
+      resetClient();
     }
-  }, [copied]);
+  }, [connected]); // ← only depend on connected, not the functions
 
-  // Button click handler
+  useEffect(() => {
+    if (!connected || umbraClient || umbraLoading) return;
+
+    // small delay — wallet.accounts populates after connected fires
+    const timer = setTimeout(() => {
+      initializeClient();
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [connected]);
+
+  // register after client is ready
+  useEffect(() => {
+    if (!ready || !umbraClient) return;
+
+    handleUmbraRegistration({ umbraClient }).catch((err) => {
+      console.error("Registration failed:", err);
+    });
+  }, [ready]); // ← fires once when ready flips to true
+
+  // copy address on click when connected
+  const copyAddress = useCallback(async () => {
+    if (!publicKey) return;
+    await navigator.clipboard.writeText(publicKey.toBase58());
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }, [publicKey]);
+
   const onButtonClick = async () => {
-    if (connecting || umbraLoading) return;
+    if (connecting) return;
+
     if (!connected) {
       try {
-        select("Solflare");
+        // find solflare in adapter list
+        const solflare = wallets.find((w) =>
+          w.adapter.name.toLowerCase().includes("solflare"),
+        );
+
+        const walletName = solflare?.adapter.name ?? wallets[0]?.adapter.name;
+
+        if (!walletName) {
+          console.error("No wallet found in adapter list");
+          return;
+        }
+
+        select(walletName); // synchronous call
+
+        // wait for adapter to register the selection
+        await new Promise((res) => setTimeout(res, 100));
+
         await connect();
       } catch (err) {
-        console.error("Failed to connect wallet:", err);
+        console.error("Connect failed:", err);
       }
       return;
     }
-    if (publicKey) {
-      await copyAddress();
-    }
+
+    await copyAddress();
   };
 
-  // Right click: Disconnect wallet when connected
   const onRightClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (connected && disconnect) {
-      try {
-        await disconnect();
-      } catch (err) {
-        console.error("Failed to disconnect wallet:", err);
-      }
+    if (connected) {
+      await disconnect();
+      resetClient();
     }
   };
 
-  // Copy address logic
-  const copyAddress = async () => {
-    if (publicKey) {
-      try {
-        await navigator.clipboard.writeText(publicKey.toBase58());
-        setCopied(true);
-      } catch (err) {
-        setCopied(false);
-        console.error("Clipboard copy failed", err);
-      }
-    }
-  };
-
-  // Optional: Handle Umbra registration from a separate button or step if needed
-  // For now, handle it automatically if both wallet and Umbra client are ready
-  useEffect(() => {
-    const doRegistration = async () => {
-      if (connected && umbraClient) {
-        try {
-          await handleUmbraRegistration({ umbraClient });
-        } catch (err) {
-          console.error("Umbra registration failed:", err);
-        }
-      }
-    };
-    doRegistration();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connected, umbraClient]); // Only when ready
+  // label logic — Umbra loading is invisible to the user
+  const label = connecting
+    ? "Connecting..."
+    : connected && publicKey
+      ? copied
+        ? "Copied!"
+        : `${publicKey.toBase58().slice(0, 4)}...${publicKey.toBase58().slice(-4)}`
+      : "Connect Wallet";
 
   return (
     <button
       onClick={onButtonClick}
       onContextMenu={onRightClick}
-      className="px-5 py-2 glow-button text-on-primary-container font-bold text-xs uppercase tracking-wider rounded-md active:opacity-80 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-      disabled={connecting || umbraLoading}
+      disabled={connecting}
+      type="button"
       title={
         connected
-          ? copied
-            ? "Copied!"
-            : "Left-click to copy • Right-click to disconnect"
-          : connecting
-            ? "Connecting..."
-            : umbraLoading
-              ? "Loading Umbra client..."
-              : "Connect wallet"
+          ? "Left-click to copy • Right-click to disconnect"
+          : "Connect wallet"
       }
-      aria-busy={connecting || umbraLoading}
-      type="button"
+      className="px-5 py-2 glow-button text-on-primary-container font-bold text-xs uppercase tracking-wider rounded-md active:opacity-80 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
     >
-      {connecting
-        ? "Connecting..."
-        : umbraLoading
-          ? "Loading..."
-          : connected && publicKey
-            ? copied
-              ? "Copied!"
-              : `${publicKey.toBase58().slice(0, 4)}...${publicKey
-                  .toBase58()
-                  .slice(-4)}`
-            : "Connect Wallet"}
+      {label}
+      {connected && (
+        <span
+          className={`ml-2 inline-block w-1.5 h-1.5 rounded-full ${
+            ready ? "bg-green-400" : "bg-yellow-400 animate-pulse"
+          }`}
+        />
+      )}
     </button>
   );
 }

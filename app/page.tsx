@@ -1,27 +1,26 @@
 "use client";
 import WalletConnectButton from "@/components/ConnectWalletButton";
+import { config } from "@/lib/config";
 import { useWallet } from "@solana/wallet-adapter-react";
 import {
   BadgeCheck,
   CheckCircle2,
-  Diamond,
   GitBranch,
   Key,
   Mail,
   Share2,
   Shield,
-  ShieldCheck,
-  Sparkles,
   Zap,
   EyeOff,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const router = useRouter()
-  const {publicKey} = useWallet()
+  // const router = useRouter();
+  // const { publicKey } = useWallet();
 
-  if(!publicKey) router.push("/dashboard")
+  // if (!publicKey) router.push("/dashboard")
+  // ;
   return (
     <div className="flex flex-col min-h-screen bg-zinc-50 dark:bg-black">
       <nav className="sticky top-0 z-50 flex justify-between items-center px-8 w-full bg-[#131313]/70 backdrop-blur-xl h-16 shadow-[0_0_20px_rgba(0,245,255,0.04)]">
@@ -32,7 +31,7 @@ export default function Home() {
               aria-hidden="true"
             />
           </div>
-          <span className="text-xl font-black text-[#e9feff] tracking-tighter">
+          <span className="text-xl font-black text-primary tracking-tighter">
             Arez
           </span>
         </div>
@@ -72,15 +71,15 @@ export default function Home() {
 
       <main className="flex-1 w-full">
         {/* <!-- Hero Section --> */}
-        <section className="relative min-h-[921px] flex flex-col items-center justify-center pt-24 pb-16 px-6">
+        <section className="relative min-h-230.25 flex flex-col items-center justify-center pt-24 pb-16 px-6">
           <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary-container/5 rounded-full blur-[120px]"></div>
             <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-tertiary-container/5 rounded-full blur-[100px]"></div>
           </div>
           <div className="container mx-auto relative z-10 flex flex-col items-center text-center max-w-5xl">
             <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
-              <span className="font-['Inter'] text-[10px] font-bold tracking-[0.1em] uppercase text-tertiary-fixed-dim px-2 py-1 bg-tertiary-fixed-dim/10 rounded">
-                Mainnet
+              <span className="font-['Inter'] text-[10px] font-bold tracking-wider uppercase text-tertiary-fixed-dim px-2 py-1 bg-tertiary-fixed-dim/10 rounded">
+                {config.network}
               </span>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-highest border border-outline-variant/30">
                 <span className="relative flex h-2 w-2">
@@ -116,7 +115,10 @@ export default function Home() {
                 Secured &amp; Powered By
               </p>
               <div className="flex flex-wrap gap-8 sm:gap-12 justify-center opacity-60 grayscale hover:grayscale-0 transition-all duration-700">
-                <a className="flex items-center gap-2" href="https://solana.com/">
+                <a
+                  className="flex items-center gap-2"
+                  href="https://solana.com/"
+                >
                   <img
                     src="https://solana.com/src/img/branding/solanaLogoMark.svg"
                     alt="Solana Logo"
@@ -128,7 +130,10 @@ export default function Home() {
                     Solana
                   </span>
                 </a>
-                <a className="flex items-center gap-2 cursor-pointer" href="https://www.umbraprivacy.com/">
+                <a
+                  className="flex items-center gap-2 cursor-pointer"
+                  href="https://www.umbraprivacy.com/"
+                >
                   <img
                     src="https://mintcdn.com/umbraprivacy/8hktEtsVSIFo5XLc/logo/dark.svg?fit=max&auto=format&n=8hktEtsVSIFo5XLc&q=85&s=c9d5da458a3678e035eaf6e5a17efbe8"
                     alt="Umbra Logo"
@@ -140,7 +145,10 @@ export default function Home() {
                     Umbra
                   </span>
                 </a>
-                <a className="flex items-center gap-2" href="https://www.arcium.com/">
+                <a
+                  className="flex items-center gap-2"
+                  href="https://www.arcium.com/"
+                >
                   <img
                     src="https://cdn.prod.website-files.com/67086aa28c40f80ff00c0a83/67086aa28c40f80ff00c0ad0_Logomark.svg"
                     alt="Arcium Logo"
@@ -152,71 +160,6 @@ export default function Home() {
                     Arcium
                   </span>
                 </a>
-              </div>
-            </div>
-            <div className="w-full max-w-md lg:max-w-lg mt-16 lg:mt-20 mx-auto relative">
-              {/* <!-- Asymmetric Bento Card for Hero Visual --> */}
-              <div className="relative w-full aspect-square glass-panel rounded-xl p-1 bg-gradient-to-br from-outline-variant/20 to-transparent">
-                <div className="bg-surface-container-lowest h-full w-full rounded-xl p-8 flex flex-col justify-between overflow-hidden relative">
-                  <div className="space-y-6">
-                    <div className="flex justify-between items-center">
-                      <div className="space-y-1">
-                        <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-outline">
-                          Privacy Mesh
-                        </div>
-                        <div className="text-xl font-bold text-primary-container">
-                          Active Stealth
-                        </div>
-                      </div>
-                      <div className="w-12 h-12 rounded-full border border-primary-container/20 flex items-center justify-center">
-                        <ShieldCheck
-                          className="h-6 w-6 text-primary-container"
-                          aria-hidden="true"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-4">
-                      <div className="h-12 w-full bg-surface-container-high rounded-lg animate-pulse flex items-center px-4 justify-between">
-                        <div className="flex gap-3 items-center">
-                          <div className="w-6 h-6 rounded-full bg-surface-variant"></div>
-                          <div className="w-24 h-2 bg-surface-variant rounded"></div>
-                        </div>
-                        <div className="w-12 h-2 bg-primary-container/30 rounded"></div>
-                      </div>
-                      <div className="h-12 w-full bg-surface-container-high rounded-lg opacity-60 flex items-center px-4 justify-between">
-                        <div className="flex gap-3 items-center">
-                          <div className="w-6 h-6 rounded-full bg-surface-variant"></div>
-                          <div className="w-24 h-2 bg-surface-variant rounded"></div>
-                        </div>
-                        <div className="w-12 h-2 bg-surface-variant rounded"></div>
-                      </div>
-                      <div className="h-12 w-full bg-surface-container-high rounded-lg opacity-30 flex items-center px-4 justify-between">
-                        <div className="flex gap-3 items-center">
-                          <div className="w-6 h-6 rounded-full bg-surface-variant"></div>
-                          <div className="w-24 h-2 bg-surface-variant rounded"></div>
-                        </div>
-                        <div className="w-12 h-2 bg-surface-variant rounded"></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="relative h-32 w-full mt-8 bg-surface-container overflow-hidden rounded-lg">
-                    <img
-                      alt=""
-                      className="w-full h-full object-cover mix-blend-overlay opacity-40"
-                      data-alt="abstract visualization of digital network data streams in glowing cyan and dark obsidian background representing secure encrypted transmissions"
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpc1pZLYM3He6DzcarPAoVL4g5Z5BeJMPX8AIrKRrJCCfcFHmKvynuBcNy4_qIbEaFtx65kpEwTia5WWIEax0Bfb02yRztDbgJbpxjTbQpQXx4U-pM_4HXRvkqS6MsnL_P9q-vWbYcfruBPIev9ZUzvXeT8Jqe3GJ8eAD4oUmWpE2l5aOMC3Y83zCcg-JcmBq55_vNG3d_lOi0__vDTby6EWux6PqTvGjDE0aNodFGhq0rFlsy23TlX5FoXYctzOo8zaeCi_Gcy7o"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest to-transparent"></div>
-                    <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
-                      <div className="text-[40px] font-black leading-none text-primary-container tracking-tighter">
-                        99.9%
-                      </div>
-                      <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-outline pb-1">
-                        Anonymity Score
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -248,7 +191,7 @@ export default function Home() {
                   </h3>
                   <p className="text-on-surface-variant text-lg leading-relaxed max-w-md">
                     Every payroll run is processed through our privacy layer,
-                    disconnecting the sender&apos;s public identity from the
+                   <span className="text-primary-container font-bold"> disconnecting</span> the sender&apos;s public identity from the
                     recipient&apos;s wallet. Hide amounts, timing, and internal
                     team hierarchies from curious competitors.
                   </p>
@@ -309,7 +252,7 @@ export default function Home() {
                         <span>Status</span>
                         <span>Privacy Level</span>
                       </div>
-                      <div className="h-[1px] bg-outline-variant/20"></div>
+                      <div className="h-px bg-outline-variant/20"></div>
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2">
                           <div className="w-1.5 h-1.5 bg-tertiary-fixed-dim rounded-full"></div>
@@ -449,7 +392,7 @@ export default function Home() {
                   aria-hidden="true"
                 />
               </div>
-              <span className="text-2xl font-black text-[#e9feff] tracking-tighter">
+              <span className="text-2xl font-black text-primary tracking-tighter">
                 Arez
               </span>
             </div>

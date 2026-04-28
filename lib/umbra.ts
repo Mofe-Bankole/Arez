@@ -1,50 +1,70 @@
-"use client";
 import { getWallets } from "@wallet-standard/app";
-import { StandardConnect } from "@wallet-standard/features";
 import {
   createSignerFromWalletAccount,
   getUmbraClient,
 } from "@umbra-privacy/sdk";
+import { config } from "./config";
+
+// wallets we actually support — order = preference
+const SUPPORTED_WALLETS = ["Solflare", "Phantom", "Backpack"];
 
 export async function createUmbraClientFromWallet() {
-  const { get } = getWallets();
-  const wallets = get();
+  if (typeof window === "undefined") {
+    throw new Error("Umbra client can only be created in the browser");
+  }
 
-  const solanaWallets = wallets.filter((w) => {
+  const { get } = getWallets();
+  const all = get();
+
+  // filter to only Solana wallets we explicitly support
+  const solanaWallets = all.filter((w) => {
     const features = Object.keys(w.features || {});
-    return (
+    const isSolana =
       features.includes("solana:signTransaction") &&
-      features.includes("solana:signMessage")
+      features.includes("solana:signMessage");
+    const isSupported = SUPPORTED_WALLETS.some((name) =>
+      w.name.toLowerCase().includes(name.toLowerCase()),
     );
+    return isSolana && isSupported;
   });
 
+  // This reports if theres no wallet
   if (solanaWallets.length === 0) {
     throw new Error(
-      "No compatible Solana wallet found. Please connect a wallet.",
+      "No supported Solana wallet found. Please install Solflare or Phantom.",
     );
   }
-  const wallet = solanaWallets[0];
 
-  // Connect if not already connected
-  const connectFeature = wallet.features?.[StandardConnect];
-  if (!connectFeature) {
-    throw new Error("Wallet does not support StandardConnect");
-  }
+  // pick by preference order
+  const wallet =
+    SUPPORTED_WALLETS.map((name) =>
+      solanaWallets.find((w) =>
+        w.name.toLowerCase().includes(name.toLowerCase()),
+      ),
+    ).find(Boolean) ?? solanaWallets[0];
 
-  const { accounts } = await (connectFeature as any).connect();
+  const accounts = wallet!.accounts;
+
   if (!accounts || accounts.length === 0) {
-    throw new Error("No accounts returned after connect");
+    throw new Error(
+      "Wallet connected but no accounts found. Try reconnecting.",
+    );
   }
 
   const account = accounts[0];
+  const signer = createSignerFromWalletAccount(wallet!, account);
 
-  const signer = createSignerFromWalletAccount(wallet, account);
+  console.log("RPC config:", {
+    rpcUrl: config.devnet_rpc,
+    rpcSubscriptionsUrl: config.devnet_rpc_subscription_url,
+    indexerApiEndpoint: config.indexerApiEndpoint,
+  });
 
   return await getUmbraClient({
     signer,
-    network: "mainnet", // change to "devnet" if testing
-    rpcUrl: "https://api.mainnet-beta.solana.com", // Use proper mainnet RPC
-    rpcSubscriptionsUrl: "wss://api.mainnet-beta.solana.com",
+    network: "devnet",
+    rpcUrl: "https://api.devnet.solana.com",
+    rpcSubscriptionsUrl: "wss://api.devnet.solana.com",
     indexerApiEndpoint: "https://utxo-indexer.api.umbraprivacy.com",
     deferMasterSeedSignature: true,
   });
