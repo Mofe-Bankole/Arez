@@ -1,12 +1,16 @@
+import { useWallet } from "@solana/wallet-adapter-react";
+import { CheckCircle, Receipt, Verified } from "lucide-react";
+
 export type ModalDataPayloadProps = {
   amount: number; // e.g. 500.00
-  sender: string; // address or name
+  // sender: string; // address or name
   time: number; // Unix timestamp (seconds)
   type: "private" | "public";
   chain: "Solana";
   network: string; // e.g. "Solana Mainnet"
   explorerURL: string | null; // optional link to explorer
   token: string; // token symbol, e.g. "USDC"
+  recipient: string; // address or name of recipient
 };
 
 /**
@@ -15,19 +19,20 @@ export type ModalDataPayloadProps = {
  */
 export default function TransactionModal({
   amount,
-  sender,
+  // sender,
   time,
   type,
   chain,
   network,
   explorerURL,
   token,
+  recipient,
 }: ModalDataPayloadProps) {
-  // Format the timestamp (fallback to “–” if invalid)
+  // Format the timestamp (fallback to "–" if invalid)
   const date = Number.isFinite(time)
     ? new Date(time * 1000).toUTCString()
     : "–";
-
+  const { publicKey } = useWallet();
   // Human‑readable amount with token symbol
   const formattedAmount = `${amount.toLocaleString(undefined, {
     minimumFractionDigits: 2,
@@ -46,7 +51,7 @@ export default function TransactionModal({
               className="material-symbols-outlined text-[#3ce36a] text-5xl"
               style={{ fontVariationSettings: "'FILL' 1" }}
             >
-              check_circle
+              <CheckCircle />
             </span>
           </div>
           <h2 className="text-2xl font-display font-bold text-[#e9feff] tracking-tight">
@@ -74,12 +79,15 @@ export default function TransactionModal({
             <div className="flex justify-between items-center text-sm">
               <span className="text-[#e5e2e1]/40">Recipient</span>
               <span className="font-mono text-[#e5e2e1] bg-[#1c1b1b] px-2 py-0.5 rounded">
-                {sender}
+                {recipient.slice(0, 4)}...{recipient.slice(-4)}
               </span>
             </div>
             <div className="flex justify-between items-center text-sm">
               <span className="text-[#e5e2e1]/40">Sender</span>
-              <span className="font-mono text-[#e5e2e1]">{sender}</span>
+              <span className="font-mono text-[#e5e2e1]">
+                {publicKey?.toString().slice(0, 4)}...
+                {publicKey?.toString().slice(-4)}
+              </span>
             </div>
             <div className="flex justify-between items-center text-sm">
               <span className="text-[#e5e2e1]/40">Network</span>
@@ -125,7 +133,7 @@ export default function TransactionModal({
               className="material-symbols-outlined text-[#3ce36a] text-sm"
               style={{ fontVariationSettings: "'FILL' 1" }}
             >
-              verified_user
+              <Verified />
             </span>
             <span className="text-[10px] text-[#3ce36a]/80 uppercase font-bold tracking-widest">
               {type === "private"

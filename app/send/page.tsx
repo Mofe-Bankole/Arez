@@ -1,36 +1,58 @@
 "use client";
 import React from "react";
 import Sidebar from "@/components/Sidebar";
-import WalletConnectButton from "@/components/ConnectWalletButton";
-import {
-  Bell,
-  Shield,
-  UserSearch,
-  BadgeCheck,
-  KeyRound,
-  Info,
-  ChevronDown,
-  HelpCircle,
-} from "lucide-react";
-import { usePublicPayment } from "@/lib/payments";
+import { UserSearch, BadgeCheck, KeyRound, ChevronDown } from "lucide-react";
+import { ArezPrivateTransferPayload, usePublicPayment } from "@/lib/payments";
+import BoardHeader from "@/components/BoardHeader";
+import TransactionModal from "@/components/TransactionModal";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { ArezkProver } from "@/lib/provers";
+import { useUmbraClient } from "@/hooks/useUmbraClient";
 
-export default function Send() {
+export default function SendPage() {
+  const { publicKey } = useWallet();
+  const {umbraClient} = useUmbraClient()
   const [recipient, setRecipient] = React.useState("");
   const [amount, setAmount] = React.useState<number>(0);
-  const [currency, setCurrency] = React.useState<"USDC">("USDC");
+  const [currency, setCurrency] = React.useState<"USDC" | "SOL">("SOL");
   const [memo, setMemo] = React.useState("");
   const [shield, setShield] = React.useState(true);
   const [attachViewingKey, setAttachViewingKey] = React.useState(false);
-
+  const [successModal, setSuccessModal] = React.useState<boolean>(false);
   const [submitting, setSubmitting] = React.useState(false);
   const [result, setResult] = React.useState<
     | { status: "idle" }
-    | { status: "ok"; sig: string }
+    | { status: "ok"; sig: string; explorerUrl: string }
     | { status: "error"; message: string }
   >({ status: "idle" });
 
   const sendPublic = usePublicPayment();
+  const handleUmbraSend = async () => {
+    if (!recipient) {
+      setResult({ status: "error", message: "Recipient address is required" });
+      return;
+    }
+    if (amount <= 0) {
+      setResult({
+        status: "error",
+        message: "Amount must be greater than zero",
+      });
+      return;
+    }
 
+    try {
+      const payload  : ArezPrivateTransferPayload= {
+        recipient,
+        amount,
+        mode: "private",
+        client :umbraClient,
+        zkProver: ArezkProver,
+        mint: currency === "USDC" ? "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" : "11111111111111111111111111111111",
+      }
+    } catch () {
+
+    }
+  };
   const handleSend = async () => {
     if (!recipient) {
       setResult({ status: "error", message: "Recipient address is required" });
@@ -55,7 +77,8 @@ export default function Send() {
       };
       const res = await sendPublic(payload);
       if (res.status === "successful") {
-        setResult({ status: "ok", sig: res.id });
+        setResult({ status: "ok", sig: res.id, explorerUrl: res.explorer });
+        setSuccessModal(true);
       } else {
         setResult({
           status: "error",
@@ -74,46 +97,28 @@ export default function Send() {
     <div className="flex h-screen w-full">
       <Sidebar />
       <main className="flex-1 flex flex-col bg-surface-dim overflow-y-auto relative">
-        <header className="sticky top-0 z-50 flex justify-between items-center px-8 w-full h-60 bg-[#131313]/70 backdrop-blur-xl shadow-[0_0_20px_rgba(0,245,255,0.04)]">
-          <div className="flex items-center gap-6">
-            <h1 className="text-xl font-black text-[#e9feff] tracking-tighter uppercase">
-              Send Payment
-            </h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 px-3 py-1 bg-surface-container rounded-full border border-outline-variant/20">
-              <span className="w-2 h-2 rounded-full bg-tertiary-fixed-dim animate-pulse"></span>
-              <span className="font-['Inter'] text-xs font-bold tracking-[0.05em] uppercase text-on-surface">
-                Mainnet
-              </span>
-            </div>
-            <button
-              type="button"
-              className="flex items-center justify-center h-10 w-10 rounded-lg text-on-surface hover:text-primary-container hover:bg-surface-container-high transition-colors"
-              aria-label="Security"
-            >
-              <Shield className="h-5 w-5" aria-hidden="true" />
-            </button>
-            <button
-              type="button"
-              className="flex items-center justify-center h-10 w-10 rounded-lg text-on-surface hover:text-primary-container hover:bg-surface-container-high transition-colors"
-              aria-label="Notifications"
-            >
-              <Bell className="h-5 w-5" aria-hidden="true" />
-            </button>
-            <div className="ml-2">
-              <WalletConnectButton />
-            </div>
-          </div>
-        </header>
+        {successModal && (
+          <TransactionModal
+            amount={amount}
+            recipient={recipient}
+            time={Math.floor(Date.now() / 1000)}
+            type={shield ? "private" : "public"}
+            chain="Solana"
+            network="devnet"
+            explorerURL={result.status === "ok" ? result.explorerUrl : null}
+            token={currency}
+          />
+        )}
+        <BoardHeader title="Send Payments" />
         <div className="flex-1 w-full max-w-6xl mx-auto p-12 grid grid-cols-12 gap-12">
           <div className="col-span-12 lg:col-span-7 space-y-8">
             <div>
               <h2 className="text-3xl font-black text-primary tracking-tight mb-2">
-                Initiate Public Transfer
+                Initiate {shield ? "Shielded" : "Public"} Transfer
               </h2>
               <p className="text-on-surface-variant font-label text-sm tracking-wide">
-                Enter the details below to send a public SOL payment.
+                Enter the details below to send a{" "}
+                {shield ? "private" : "public"} SOL payment.
               </p>
             </div>
             <form
@@ -155,7 +160,7 @@ export default function Send() {
                       className="w-full bg-surface-container-highest border border-outline-variant/25 rounded-xl py-4 pl-4 pr-12 text-on-surface placeholder:text-outline-variant/60 focus:outline-none focus:ring-2 focus:ring-primary-container/35 focus:border-primary-container/40 transition-all font-body text-sm"
                       placeholder="0.00"
                       inputMode="decimal"
-                      type="text"
+                      type="number"
                     />
                   </div>
                 </div>
@@ -166,10 +171,10 @@ export default function Send() {
                   <div className="relative">
                     <select
                       value={currency}
-                      onChange={(e) => setCurrency(e.target.value as "USDC")}
+                      onChange={(e) => setCurrency(e.target.value as "SOL")}
                       className="w-full bg-surface-container-highest border border-outline-variant/25 rounded-xl py-4 pl-4 pr-11 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container/35 focus:border-primary-container/40 transition-all font-body text-sm appearance-none cursor-pointer"
                     >
-                      <option value="USDC">USDC (SPL-Token)</option>
+                      <option value="SOL">SOL (SPL-Token)</option>
                     </select>
                     <ChevronDown
                       className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-outline-variant"
@@ -178,17 +183,21 @@ export default function Send() {
                   </div>
                 </div>
               </div>
-              <div className="group">
-                <label className="block text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-2 px-1">
-                  Public Memo (Optional)
-                </label>
-                <textarea
-                  value={memo}
-                  onChange={(e) => setMemo(e.target.value)}
-                  className="w-full min-h-[120px] bg-surface-container-highest border border-outline-variant/25 rounded-xl py-4 px-4 text-on-surface placeholder:text-outline-variant/60 focus:outline-none focus:ring-2 focus:ring-primary-container/35 focus:border-primary-container/40 transition-all font-body text-sm resize-none"
-                  placeholder="Add a note to this transaction..."
-                />
-              </div>
+              {shield ? (
+                <div className="group">
+                  <label className="block text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-2 px-1">
+                    Public Memo (Optional)
+                  </label>
+                  <textarea
+                    value={memo}
+                    onChange={(e) => setMemo(e.target.value)}
+                    className="w-full min-h-[120px] bg-surface-container-highest border border-outline-variant/25 rounded-xl py-4 px-4 text-on-surface placeholder:text-outline-variant/60 focus:outline-none focus:ring-2 focus:ring-primary-container/35 focus:border-primary-container/40 transition-all font-body text-sm resize-none"
+                    placeholder="Add a note to this transaction..."
+                  />
+                </div>
+              ) : (
+                ""
+              )}
               <div className="space-y-4 pt-4">
                 <div className="flex items-center justify-between p-4 bg-surface-container-low rounded-xl border border-outline-variant/10">
                   <div className="flex items-center gap-4">
@@ -252,7 +261,8 @@ export default function Send() {
               )}
               {result.status === "ok" && (
                 <div className="rounded-xl border border-tertiary-fixed-dim/20 bg-tertiary-fixed-dim/5 px-4 py-3 text-sm text-tertiary">
-                  Submitted. Signature:{" "}
+                  Transaction Sucessful
+                  <a href={result.explorerUrl} />
                   <span className="font-mono tabular-nums">{result.sig}</span>
                 </div>
               )}
@@ -262,7 +272,12 @@ export default function Send() {
                 onClick={handleSend}
                 disabled={submitting}
               >
-                {submitting ? "Sending…" : "Send Public Payment"}
+                <div>
+                  {/*<Send className="text-on-primary-container" />*/}
+                  {submitting
+                    ? "Sending…"
+                    : `Send ${shield ? "Private" : "Public"} Payment`}
+                </div>
               </button>
             </form>
           </div>

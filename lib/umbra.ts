@@ -5,8 +5,7 @@ import {
 } from "@umbra-privacy/sdk";
 import { config } from "./config";
 
-// wallets we actually support — order = preference
-const SUPPORTED_WALLETS = ["Solflare", "Phantom", "Backpack"];
+export const SUPPORTED_WALLETS = ["Solflare", "Phantom", "Backpack"];
 
 export async function createUmbraClientFromWallet() {
   if (typeof window === "undefined") {
@@ -19,6 +18,7 @@ export async function createUmbraClientFromWallet() {
   // filter to only Solana wallets we explicitly support
   const solanaWallets = all.filter((w) => {
     const features = Object.keys(w.features || {});
+
     const isSolana =
       features.includes("solana:signTransaction") &&
       features.includes("solana:signMessage");
@@ -55,7 +55,7 @@ export async function createUmbraClientFromWallet() {
   const signer = createSignerFromWalletAccount(wallet!, account);
 
   console.log("RPC config:", {
-    rpcUrl: config.devnet_rpc,
+    rpcUrl: process.env.DEVNET_RPC_URL as string,
     rpcSubscriptionsUrl: config.devnet_rpc_subscription_url,
     indexerApiEndpoint: config.indexerApiEndpoint,
   });

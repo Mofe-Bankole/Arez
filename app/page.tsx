@@ -13,14 +13,8 @@ import {
   Zap,
   EyeOff,
 } from "lucide-react";
-// import { useRouter } from "next/navigation";
 
 export default function Home() {
-  // const router = useRouter();
-  // const { publicKey } = useWallet();
-
-  // if (!publicKey) router.push("/dashboard")
-  // ;
   return (
     <div className="flex flex-col min-h-screen bg-zinc-50 dark:bg-black">
       <nav className="sticky top-0 z-50 flex justify-between items-center px-8 w-full bg-[#131313]/70 backdrop-blur-xl h-16 shadow-[0_0_20px_rgba(0,245,255,0.04)]">
@@ -62,9 +56,6 @@ export default function Home() {
           </a>
         </div>
         <div className="flex items-center gap-4">
-          {/* <span className="font-['Inter'] text-[10px] font-bold tracking-[0.1em] uppercase text-tertiary-fixed-dim px-2 py-1 bg-tertiary-fixed-dim/10 rounded">
-            Mainnet
-          </span> */}
           <WalletConnectButton />
         </div>
       </nav>
@@ -191,9 +182,13 @@ export default function Home() {
                   </h3>
                   <p className="text-on-surface-variant text-lg leading-relaxed max-w-md">
                     Every payroll run is processed through our privacy layer,
-                   <span className="text-primary-container font-bold"> disconnecting</span> the sender&apos;s public identity from the
-                    recipient&apos;s wallet. Hide amounts, timing, and internal
-                    team hierarchies from curious competitors.
+                    <span className="text-primary-container font-bold">
+                      {" "}
+                      disconnecting
+                    </span>{" "}
+                    the sender&apos;s public identity from the recipient&apos;s
+                    wallet. Hide amounts, timing, and internal team hierarchies
+                    from curious competitors.
                   </p>
                 </div>
                 <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-primary-container/5 rounded-full blur-3xl group-hover:bg-primary-container/10 transition-all duration-700"></div>

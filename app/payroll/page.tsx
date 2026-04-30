@@ -12,7 +12,8 @@ import {
   Shield,
   ShieldCheck,
 } from "lucide-react";
-
+import BoardHeader from "@/components/BoardHeader";
+// import from "fast"
 const payrollRows = [
   {
     initials: "JD",
@@ -63,38 +64,7 @@ export default function PayrollPage() {
       {/* Main Content Canvas */}
       <main className="flex-1 flex flex-col bg-surface overflow-hidden relative">
         {/* TopNavBar */}
-        <header className="sticky top-0 z-50 flex justify-between items-center px-8 w-full h-16 bg-[#131313]/70 backdrop-blur-xl shadow-[0_0_20px_rgba(0,245,255,0.04)] border-b-0">
-          <div className="flex items-center space-x-4">
-            <h2 className="text-xl font-black text-primary tracking-tighter">
-              Arez
-            </h2>
-            <span className="px-2 py-1 bg-surface-container-highest rounded text-[10px] font-bold text-primary-container tracking-widest uppercase">
-              Batch Portal
-            </span>
-          </div>
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-2 text-on-surface/60">
-              <Shield className="h-4 w-4" aria-hidden="true" />
-              <span className="text-[10px] font-bold tracking-widest uppercase">
-                Mainnet Encryption Active
-              </span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <button
-                type="button"
-                className="h-10 w-10 inline-flex items-center justify-center rounded-lg text-on-surface/60 hover:text-primary-container hover:bg-surface-container-high transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                aria-label="Notifications"
-              >
-                <Bell className="h-5 w-5" aria-hidden="true" />
-              </button>
-              <div className="h-4 w-px bg-outline-variant/30"></div>
-              <button className="px-4 py-1.5 border border-outline-variant text-[10px] font-bold tracking-widest uppercase rounded hover:bg-surface-container transition-colors">
-                Mainnet
-              </button>
-              <WalletConnectButton />
-            </div>
-          </div>
-        </header>
+        <BoardHeader title="Batch Payroll" />
         {/* Page Content */}
         <div className="flex-1 overflow-y-auto p-8 no-scrollbar">
           <div className="max-w-6xl mx-auto space-y-8">

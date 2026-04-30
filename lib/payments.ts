@@ -6,13 +6,21 @@ import {
   Transaction,
 } from "@solana/web3.js";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { config } from "@/lib/config";
 import {
   TOKEN_PROGRAM_ID,
   createTransferCheckedInstruction,
   getAssociatedTokenAddress,
   getMint,
 } from "@solana/spl-token";
+import { getCreateReceiverClaimableUtxoFromPublicBalanceProver } from "@umbra-privacy/web-zk-prover";
+import {
+  IUmbraClient,
+  ZkProverForReceiverClaimableUtxoFromPublicBalance,
+} from "@umbra-privacy/sdk/interfaces";
+import { getPublicBalanceToReceiverClaimableUtxoCreatorFunction } from "@umbra-privacy/sdk";
+import { address } from "@solana/kit";
+import { createU64 } from "@umbra-privacy/sdk/utils";
+import { useUmbraClient } from "@/hooks/useUmbraClient";
 
 /**
  * Payload for a public payment.
@@ -24,11 +32,16 @@ export interface PaymentRequest {
   mode: "public" | "private";
   amount: number; // In SOL or token units (not lamports)
   recipient: string; // Base‑58 address
-  network: "devnet" | "mainnet";
+  network: "devnet" | "mainnet"; // Network
   chain: "solana";
   token?: "SOL" | string; // mint address for SPL tokens
 }
 
+export interface ArezPrivateTransferPayload extends PaymentRequest {
+  client: IUmbraClient;
+  zkProver: ZkProverForReceiverClaimableUtxoFromPublicBalance;
+  mint: string;
+}
 /** Result shape returned by every payment helper */
 export type ArezTransactionPayload = {
   status: "successful" | "failed";
@@ -80,10 +93,10 @@ export async function publicPayment(
     };
   }
 
-  // ---------- RPC connection ----------
-  // const rpcUrl =
-  //   payload.network === "mainnet" ? config.mainnet_rpc : config.devnet_rpc;
-  const connection = new Connection(config.devnet_rpc, "confirmed");
+  const connection = new Connection(
+    "https://api.devnet.solana.com",
+    "confirmed",
+  );
 
   // ---------- Build transaction ----------
   const recipientPubkey = new PublicKey(payload.recipient);
@@ -204,6 +217,21 @@ export const SendPublicPayment = (payload: PaymentRequest) => {
 /* -------------------------------------------------------------------------- */
 /*  PRIVATE PAYMENT – STUB (future work)                                      */
 /* -------------------------------------------------------------------------- */
-export async function sendPrivatePayment() {
-  // Placeholder – private‑payment (ZK‑shielded) logic will be added later.
+export async function SendPrivatePayment(payload: ArezPrivateTransferPayload) {
+  console.log(payload);
+  const createUtxo = getPublicBalanceToReceiverClaimableUtxoCreatorFunction(
+    { client: payload.client },
+    { zkProver: payload.zkProver },
+  );
+  const RECIPIENT = payload.recipient;
+  const MINT = payload.mint;
+  const AMOUNT = payload.amount;
+
+  const tx = await createUtxo({
+    destinationAddress: address(RECIPIENT),
+    mint: address(MINT),
+    amount: createU64(BigInt(AMOUNT * LAMPORTS_PER_SOL)),
+  });
+
+  return tx;
 }

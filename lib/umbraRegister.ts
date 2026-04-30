@@ -14,13 +14,12 @@ export async function handleUmbraRegistration({ umbraClient }: Props) {
     );
 
     // register() is idempotent — safe to call even if already registered
-    const regis = await register({
+    await register({
       confidential: true, // hide balance
       anonymous: true,
     });
 
     console.log("✅ UMBRA REGISTRATION COMPLETE");
-    console.log(regis);
     return { success: true };
   } catch (err: any) {
     // "already registered" is not a real error — swallow it

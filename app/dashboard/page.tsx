@@ -16,14 +16,16 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
+import BoardHeader from "@/components/BoardHeader";
 
 export default function Dashboard() {
-  const { connected, publicKey } = useWallet()
+  const { connected, publicKey } = useWallet();
   const balances = useBalances();
 
-  const addressLabel = connected && publicKey
-    ? `${publicKey.toBase58().slice(0, 4)}...${publicKey.toBase58().slice(-4)}`
-    : "Not connected";
+  const addressLabel =
+    connected && publicKey
+      ? `${publicKey.toBase58().slice(0, 4)}...${publicKey.toBase58().slice(-4)}`
+      : "Not connected";
 
   const formatCompact = (n: number) =>
     new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(n);
@@ -34,54 +36,15 @@ export default function Dashboard() {
       maximumFractionDigits: 2,
     }).format(n);
 
-  const usdc =
-    balances.status === "ready" ? balances.usdc : null;
-  const sol =
-    balances.status === "ready" ? balances.sol : null;
+  const usdc = balances.status === "ready" ? balances.usdc : null;
+  const sol = balances.status === "ready" ? balances.sol : null;
 
   return (
     <div className="flex min-h-screen w-full bg-background">
       <SideBar />
       <main className="flex-1 flex flex-col min-h-screen bg-background">
         {/* TopNavBar Component */}
-        <header className="sticky top-0 z-50 flex justify-between items-center px-8 w-full h-16 bg-[#131313]/70 backdrop-blur-xl shadow-[0_0_20px_rgba(0,245,255,0.04)]">
-          <div className="flex items-center gap-4">
-            <Shield className="h-5 w-5 text-outline" aria-hidden="true" />
-            <div className="flex items-center space-x-2 bg-surface-container-high px-3 py-1.5 rounded-full">
-              <span className="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
-              <span className="font-['Inter'] text-xs font-bold tragecking-[0.05em] text-[#e5e2e1]">
-                {process.env.NODE_ENV}
-              </span>
-            </div>
-          </div>
-          <div className="flex items-center space-x-6">
-            <div className="hidden sm:flex items-center gap-2">
-              <div className="bg-surface-container-highest px-3 py-1.5 rounded-lg border border-outline-variant/20">
-                {/* <span className="font-mono tabular-nums text-xs font-bold tracking-[0.05em] uppercase text-primary">
-                  {addressLabel}
-                </span> */}
-              </div>
-              <WalletConnectButton />
-            </div>
-            <div className="flex space-x-4">
-              <button
-                type="button"
-                className="h-10 w-10 inline-flex items-center justify-center rounded-lg text-outline hover:text-primary-container hover:bg-surface-container-high transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                aria-label="Notifications"
-              >
-                <Bell className="h-5 w-5" aria-hidden="true" />
-              </button>
-              <div className="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden ring-1 ring-outline-variant/30">
-                <img
-                  alt="User Profile"
-                  className="w-full h-full object-cover"
-                  data-alt="Close-up portrait of a professional male executive in a dark tech setting with soft rim lighting and minimalist background"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZ7gXRv3_DLp3b6em7_jlW9FF2KEeob18cSSygNLJni9M-onvx7uZsVaJuVkF1EmJ5XgO3MZcU0jUJddlNdAa50fECJhkgwdSwDcBKaLHPXNKko1KjAobIakEwixpu1-8VQ9ns7fVCYAtSc8fffpg72FPLpyl8EwU2lejMgOZ6xvlgmit9wJpZ0PTERZEiNjPXE7fn105DzSGT-bk-YYUxvthrlkq8CWHOn-OgJ3tePYzDvVPtweR5MQEIlBciY9e7IOKGaTEKpuI"
-                />
-              </div>
-            </div>
-          </div>
-        </header>
+        <BoardHeader title="Dashboard" />
         {/* Dashboard Content */}
         <div className="p-8 space-y-8 overflow-y-auto">
           {/* Welcome Header */}
@@ -124,7 +87,9 @@ export default function Dashboard() {
                   <RefreshCw
                     className={[
                       "h-3.5 w-3.5",
-                      balances.status === "loading" ? "animate-spin text-primary-container" : "",
+                      balances.status === "loading"
+                        ? "animate-spin text-primary-container"
+                        : "",
                     ].join(" ")}
                     aria-hidden="true"
                   />
@@ -157,7 +122,8 @@ export default function Dashboard() {
                 <div className="text-outline">
                   <span className="font-bold">Note:</span>{" "}
                   <span className="text-on-surface-variant">
-                    This is wallet USDC (devnet). “Shielded” totals can be wired to Umbra indexer next.
+                    This is wallet USDC (devnet). “Shielded” totals can be wired
+                    to Umbra indexer next.
                   </span>
                 </div>
               </div>
@@ -279,7 +245,10 @@ export default function Dashboard() {
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-2">
                         <div className="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center">
-                          <Lock className="h-3.5 w-3.5 text-outline" aria-hidden="true" />
+                          <Lock
+                            className="h-3.5 w-3.5 text-outline"
+                            aria-hidden="true"
+                          />
                         </div>
                         <span className="font-mono text-sm text-outline tracking-wider">
                           • • • • 9f42
@@ -312,7 +281,10 @@ export default function Dashboard() {
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-2">
                         <div className="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center">
-                          <Lock className="h-3.5 w-3.5 text-outline" aria-hidden="true" />
+                          <Lock
+                            className="h-3.5 w-3.5 text-outline"
+                            aria-hidden="true"
+                          />
                         </div>
                         <span className="font-mono text-sm text-outline tracking-wider">
                           • • • • a12c
@@ -345,7 +317,10 @@ export default function Dashboard() {
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-2">
                         <div className="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center">
-                          <Lock className="h-3.5 w-3.5 text-outline" aria-hidden="true" />
+                          <Lock
+                            className="h-3.5 w-3.5 text-outline"
+                            aria-hidden="true"
+                          />
                         </div>
                         <span className="font-mono text-sm text-outline tracking-wider">
                           • • • • d771
@@ -380,7 +355,10 @@ export default function Dashboard() {
           <div className="relative flex items-center justify-center">
             <div className="absolute w-12 h-12 rounded-full border border-primary-container/20 animate-ping"></div>
             <div className="relative w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-primary-container/40">
-              <ShieldCheck className="h-5 w-5 text-primary-container" aria-hidden="true" />
+              <ShieldCheck
+                className="h-5 w-5 text-primary-container"
+                aria-hidden="true"
+              />
             </div>
           </div>
         </div>

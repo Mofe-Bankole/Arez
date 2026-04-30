@@ -1,16 +1,16 @@
 "use client";
 import { useState, useCallback, useRef } from "react";
 import { createUmbraClientFromWallet } from "@/lib/umbra";
+import { IUmbraClient } from "@umbra-privacy/sdk/interfaces";
 
 export function useUmbraClient() {
-  const [umbraClient, setUmbraClient] = useState<unknown>(null);
+  const [umbraClient, setUmbraClient] = useState<IUmbraClient | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
   const initializingRef = useRef(false); // prevents double-init
 
   const initializeClient = useCallback(async () => {
-    // prevent double-init from useEffect firing twice (React StrictMode)
     if (initializingRef.current || umbraClient) return;
     initializingRef.current = true;
 
