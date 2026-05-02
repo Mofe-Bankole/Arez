@@ -281,7 +281,7 @@ export default function PayrollPage() {
             </div>
           </div>
         </div>
-        {/* Privacy Mesh Overlay (Bottom Corner Branding) */}
+        {/* Privacy Mesh Overlay (BottomCorner Branding) */}
         <div className="absolute bottom-6 right-6 opacity-20 pointer-events-none">
           <div className="flex items-center space-x-2">
             <ShieldCheck

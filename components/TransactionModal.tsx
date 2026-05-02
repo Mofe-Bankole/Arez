@@ -32,13 +32,16 @@ export default function TransactionModal({
   const date = Number.isFinite(time)
     ? new Date(time * 1000).toUTCString()
     : "–";
+
+
+  
   const { publicKey } = useWallet();
   // Human‑readable amount with token symbol
   const formattedAmount = `${amount.toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })} ${token}`;
-
+  
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#050505]/90 backdrop-blur-sm">
       <div className="w-full max-w-md bg-[#131313] border border-[#3a494a]/20 rounded-xl overflow-hidden glass-panel stealth-glow animate-in fade-in zoom-in duration-300">

@@ -11,7 +11,7 @@ import { useUmbraClient } from "@/hooks/useUmbraClient";
 
 export default function SendPage() {
   const { publicKey } = useWallet();
-  const {umbraClient} = useUmbraClient()
+  const { umbraClient } = useUmbraClient();
   const [recipient, setRecipient] = React.useState("");
   const [amount, setAmount] = React.useState<number>(0);
   const [currency, setCurrency] = React.useState<"USDC" | "SOL">("SOL");
@@ -41,16 +41,19 @@ export default function SendPage() {
     }
 
     try {
-      const payload  : ArezPrivateTransferPayload= {
+      const payload: ArezPrivateTransferPayload = {
         recipient,
         amount,
         mode: "private",
-        client :umbraClient,
+        client: umbraClient,
         zkProver: ArezkProver,
-        mint: currency === "USDC" ? "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" : "11111111111111111111111111111111",
-      }
-    } catch () {
-
+        mint:
+          currency === "USDC"
+            ? "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+            : "11111111111111111111111111111111",
+      };
+    } catch (err: any) {
+      console.log(error);
     }
   };
   const handleSend = async () => {

@@ -12,7 +12,6 @@ import {
   getAssociatedTokenAddress,
   getMint,
 } from "@solana/spl-token";
-import { getCreateReceiverClaimableUtxoFromPublicBalanceProver } from "@umbra-privacy/web-zk-prover";
 import {
   IUmbraClient,
   ZkProverForReceiverClaimableUtxoFromPublicBalance,
@@ -20,7 +19,6 @@ import {
 import { getPublicBalanceToReceiverClaimableUtxoCreatorFunction } from "@umbra-privacy/sdk";
 import { address } from "@solana/kit";
 import { createU64 } from "@umbra-privacy/sdk/utils";
-import { useUmbraClient } from "@/hooks/useUmbraClient";
 
 /**
  * Payload for a public payment.
