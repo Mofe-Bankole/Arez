@@ -39,10 +39,10 @@ export default function Sidebar() {
 
   const nav: NavItem[] = [
     {
-      href: "/dashboard",
+      href: "/home",
       label: "Dashboard",
       icon: <LayoutDashboard className="h-5 w-5" aria-hidden="true" />,
-      match: (p) => p === "/dashboard",
+      match: (p) => p === "/home",
     },
     {
       href: "/send",

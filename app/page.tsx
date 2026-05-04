@@ -32,7 +32,7 @@ export default function Home() {
         <div className="hidden md:flex gap-8 items-center">
           <a
             className="font-['Inter'] text-xs font-bold tracking-[0.05em] uppercase text-[#e5e2e1] hover:text-[#00f5ff] transition-all duration-300"
-            href="/dashboard"
+            href="/home"
           >
             Dashboard
           </a>

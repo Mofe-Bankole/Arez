@@ -210,7 +210,6 @@ export const SendPublicPayment = (payload: PaymentRequest) => {
 };
 
 export async function SendPrivatePayment(payload: ArezPrivateTransferPayload) {
-  console.log(payload);
   const createUtxo = getPublicBalanceToReceiverClaimableUtxoCreatorFunction(
     { client: payload.client },
     { zkProver: payload.zkProver },
