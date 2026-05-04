@@ -1,5 +1,6 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import { CheckCircle, Receipt, Verified } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export type ModalDataPayloadProps = {
   amount: number; // e.g. 500.00
@@ -17,6 +18,7 @@ export type ModalDataPayloadProps = {
  * Transaction success modal.
  * Rendered as a centered overlay with a glass‑morphism effect.
  */
+
 export default function TransactionModal({
   amount,
   // sender,
@@ -28,20 +30,20 @@ export default function TransactionModal({
   token,
   recipient,
 }: ModalDataPayloadProps) {
+  const router = useRouter();
+
   // Format the timestamp (fallback to "–" if invalid)
   const date = Number.isFinite(time)
     ? new Date(time * 1000).toUTCString()
     : "–";
 
-
-  
   const { publicKey } = useWallet();
   // Human‑readable amount with token symbol
   const formattedAmount = `${amount.toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })} ${token}`;
-  
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#050505]/90 backdrop-blur-sm">
       <div className="w-full max-w-md bg-[#131313] border border-[#3a494a]/20 rounded-xl overflow-hidden glass-panel stealth-glow animate-in fade-in zoom-in duration-300">
@@ -120,8 +122,7 @@ export default function TransactionModal({
             <button
               className="block w-full py-3 bg-[#1c1b1b] text-[#e5e2e1] text-center font-bold text-sm rounded-md border border-[#3a494a]/20 hover:bg-[#2a2a2a] transition-all"
               onClick={() => {
-                // Parent component should control modal visibility.
-                // Example: setShowModal(false);
+                router.push("/send");
               }}
             >
               Return to Dashboard

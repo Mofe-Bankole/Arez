@@ -1,6 +1,11 @@
 "use client";
 
 import React from "react";
+import { useUmbraClient } from "@/hooks/useUmbraClient";
+import { ArezPrivateTransferPayload, SendPrivatePayment } from "@/lib/payments";
+import { ArezkProver } from "@/lib/provers";
+import { parse } from "fast-csv";
+import { IUmbraClient } from "@umbra-privacy/sdk/interfaces";
 import SideBar from "@/components/Sidebar";
 import WalletConnectButton from "@/components/ConnectWalletButton";
 import {
@@ -58,6 +63,14 @@ const payrollRows = [
 ];
 
 export default function PayrollPage() {
+  // Shield toggle for entire batch
+  const [shieldAll, setShieldAll] = React.useState(true);
+  // CSV batch data
+  const [batchData, setBatchData] = React.useState<
+    Array<{ recipient: string; amount: number; memo?: string }>
+  >([]);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const { umbraClient } = useUmbraClient();
   return (
     <div className="flex h-screen w-full bg-background text-on-surface font-body overflow-hidden">
       <SideBar />

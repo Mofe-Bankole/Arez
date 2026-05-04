@@ -204,17 +204,11 @@ export function usePublicPayment() {
   };
 }
 
-/* -------------------------------------------------------------------------- */
-/*  LEGACY WRAPPER (kept for backward compatibility)                         */
-/* -------------------------------------------------------------------------- */
 export const SendPublicPayment = (payload: PaymentRequest) => {
   const sendFn = usePublicPayment();
   return sendFn(payload);
 };
 
-/* -------------------------------------------------------------------------- */
-/*  PRIVATE PAYMENT – STUB (future work)                                      */
-/* -------------------------------------------------------------------------- */
 export async function SendPrivatePayment(payload: ArezPrivateTransferPayload) {
   console.log(payload);
   const createUtxo = getPublicBalanceToReceiverClaimableUtxoCreatorFunction(

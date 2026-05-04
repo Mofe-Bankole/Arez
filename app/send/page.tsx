@@ -1,17 +1,24 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import { UserSearch, BadgeCheck, KeyRound, ChevronDown } from "lucide-react";
-import { ArezPrivateTransferPayload, usePublicPayment } from "@/lib/payments";
+import {
+  ArezPrivateTransferPayload,
+  SendPrivatePayment,
+  usePublicPayment,
+} from "@/lib/payments";
 import BoardHeader from "@/components/BoardHeader";
 import TransactionModal from "@/components/TransactionModal";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { ArezkProver } from "@/lib/provers";
 import { useUmbraClient } from "@/hooks/useUmbraClient";
+import { IUmbraClient } from "@umbra-privacy/sdk/interfaces";
+
+const SOL_MINT = "So11111111111111111111111111111111111111112";
 
 export default function SendPage() {
   const { publicKey } = useWallet();
-  const { umbraClient } = useUmbraClient();
+  const { umbraClient, initializeClient, ready, loading } = useUmbraClient();
   const [recipient, setRecipient] = React.useState("");
   const [amount, setAmount] = React.useState<number>(0);
   const [currency, setCurrency] = React.useState<"USDC" | "SOL">("SOL");
@@ -20,6 +27,9 @@ export default function SendPage() {
   const [attachViewingKey, setAttachViewingKey] = React.useState(false);
   const [successModal, setSuccessModal] = React.useState<boolean>(false);
   const [submitting, setSubmitting] = React.useState(false);
+  const [txSig, setTxSig] = React.useState<string>("");
+  const [txExplorerUrl, setTxExplorerUrl] = React.useState<string>("");
+
   const [result, setResult] = React.useState<
     | { status: "idle" }
     | { status: "ok"; sig: string; explorerUrl: string }
@@ -27,35 +37,14 @@ export default function SendPage() {
   >({ status: "idle" });
 
   const sendPublic = usePublicPayment();
-  const handleUmbraSend = async () => {
-    if (!recipient) {
-      setResult({ status: "error", message: "Recipient address is required" });
-      return;
-    }
-    if (amount <= 0) {
-      setResult({
-        status: "error",
-        message: "Amount must be greater than zero",
-      });
-      return;
-    }
 
-    try {
-      const payload: ArezPrivateTransferPayload = {
-        recipient,
-        amount,
-        mode: "private",
-        client: umbraClient,
-        zkProver: ArezkProver,
-        mint:
-          currency === "USDC"
-            ? "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-            : "11111111111111111111111111111111",
-      };
-    } catch (err: any) {
-      console.log(error);
+  // 🔑 KEY FIX — initialize client on mount when wallet connects
+  useEffect(() => {
+    if (publicKey && !ready && !loading) {
+      initializeClient();
     }
-  };
+  }, [publicKey, ready, loading]);
+
   const handleSend = async () => {
     if (!recipient) {
       setResult({ status: "error", message: "Recipient address is required" });
@@ -68,28 +57,73 @@ export default function SendPage() {
       });
       return;
     }
+
     setSubmitting(true);
     setResult({ status: "idle" });
+
     try {
-      const payload = {
-        mode: "public",
-        recipient,
-        network: "devnet",
-        chain: "solana",
-        amount,
-      };
-      const res = await sendPublic(payload);
-      if (res.status === "successful") {
-        setResult({ status: "ok", sig: res.id, explorerUrl: res.explorer });
+      if (shield) {
+        // 🔒 PRIVATE PATH — Umbra mixer
+        if (!umbraClient) {
+          setResult({
+            status: "error",
+            message: "Umbra client not ready — try reconnecting your wallet",
+          });
+          return;
+        }
+
+        const payload: ArezPrivateTransferPayload = {
+          client: umbraClient as IUmbraClient,
+          zkProver: ArezkProver,
+          recipient,
+          mint: SOL_MINT,
+          amount,
+          mode: "private",
+          chain: "solana",
+          network: "devnet",
+        };
+
+        const tx = await SendPrivatePayment(payload);
+        console.log("🔒 Private tx result:", JSON.stringify(tx, null, 2));
+
+        // extract signature — adjust field name once you see the log above
+        // const sig =
+        //   tx?.signature ??
+        //   tx?.transactionSignature ??
+        //   tx?.txId ??
+        //   tx?.id ??
+        //   "confirmed";
+
+        // const explorerUrl = `https://explorer.solana.com/tx/${sig}?cluster=devnet`;
+
+        // setTxSig(sig);
+        // setTxExplorerUrl(explorerUrl);
+        // setResult({ status: "ok", sig, explorerUrl });
         setSuccessModal(true);
       } else {
-        setResult({
-          status: "error",
-          message: res.error ?? "Transaction failed",
+        // 📢 PUBLIC PATH
+        const res = await sendPublic({
+          mode: "public",
+          recipient,
+          network: "devnet",
+          chain: "solana",
+          amount,
         });
+
+        if (res.status === "successful") {
+          setTxSig(res.id);
+          setTxExplorerUrl(res.explorer);
+          setResult({ status: "ok", sig: res.id, explorerUrl: res.explorer });
+          setSuccessModal(true);
+        } else {
+          setResult({
+            status: "error",
+            message: res.error ?? "Transaction failed",
+          });
+        }
       }
     } catch (e: any) {
-      console.log(e);
+      console.error(e);
       setResult({ status: "error", message: e.message ?? "Unexpected error" });
     } finally {
       setSubmitting(false);
@@ -108,11 +142,36 @@ export default function SendPage() {
             type={shield ? "private" : "public"}
             chain="Solana"
             network="devnet"
-            explorerURL={result.status === "ok" ? result.explorerUrl : null}
+            explorerURL={txExplorerUrl || null}
             token={currency}
           />
         )}
         <BoardHeader title="Send Payments" />
+
+        {/* Umbra client status indicator */}
+        {shield && (
+          <div className="px-12 pt-4">
+            {loading && (
+              <div className="text-xs text-on-surface-variant animate-pulse">
+                ⏳ Initializing Umbra client...
+              </div>
+            )}
+            {ready && (
+              <div className="text-xs text-green-400">
+                🔒 Umbra client ready — private transfers enabled
+              </div>
+            )}
+            {!ready && !loading && publicKey && (
+              <div
+                className="text-xs text-yellow-400 cursor-pointer"
+                onClick={initializeClient}
+              >
+                ⚠️ Umbra not initialized — click to retry
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="flex-1 w-full max-w-6xl mx-auto p-12 grid grid-cols-12 gap-12">
           <div className="col-span-12 lg:col-span-7 space-y-8">
             <div>
@@ -151,21 +210,20 @@ export default function SendPage() {
                   </div>
                 </div>
               </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="group">
                   <label className="block text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-2 px-1">
                     Amount
                   </label>
-                  <div className="relative">
-                    <input
-                      value={amount}
-                      onChange={(e) => setAmount(Number(e.target.value))}
-                      className="w-full bg-surface-container-highest border border-outline-variant/25 rounded-xl py-4 pl-4 pr-12 text-on-surface placeholder:text-outline-variant/60 focus:outline-none focus:ring-2 focus:ring-primary-container/35 focus:border-primary-container/40 transition-all font-body text-sm"
-                      placeholder="0.00"
-                      inputMode="decimal"
-                      type="number"
-                    />
-                  </div>
+                  <input
+                    value={amount}
+                    onChange={(e) => setAmount(Number(e.target.value))}
+                    className="w-full bg-surface-container-highest border border-outline-variant/25 rounded-xl py-4 pl-4 pr-12 text-on-surface placeholder:text-outline-variant/60 focus:outline-none focus:ring-2 focus:ring-primary-container/35 focus:border-primary-container/40 transition-all font-body text-sm"
+                    placeholder="0.00"
+                    inputMode="decimal"
+                    type="number"
+                  />
                 </div>
                 <div className="group">
                   <label className="block text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-2 px-1">
@@ -186,7 +244,8 @@ export default function SendPage() {
                   </div>
                 </div>
               </div>
-              {shield ? (
+
+              {shield && (
                 <div className="group">
                   <label className="block text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-2 px-1">
                     Public Memo (Optional)
@@ -198,9 +257,8 @@ export default function SendPage() {
                     placeholder="Add a note to this transaction..."
                   />
                 </div>
-              ) : (
-                ""
               )}
+
               <div className="space-y-4 pt-4">
                 <div className="flex items-center justify-between p-4 bg-surface-container-low rounded-xl border border-outline-variant/10">
                   <div className="flex items-center gap-4">
@@ -229,6 +287,7 @@ export default function SendPage() {
                     <div className="relative inline-block h-6 w-11 shrink-0 rounded-full bg-surface-container-highest after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-focus:outline-2 peer-focus:outline-offset-2 peer-focus:outline-primary-container/40 peer-checked:bg-primary-container peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white"></div>
                   </label>
                 </div>
+
                 <div className="flex items-center justify-between p-4 bg-surface-container-low rounded-xl border border-outline-variant/10">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-on-surface-variant/10 flex items-center justify-center">
@@ -257,6 +316,7 @@ export default function SendPage() {
                   </label>
                 </div>
               </div>
+
               {result.status === "error" && (
                 <div className="rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3 text-sm text-red-200">
                   {result.message}
@@ -264,29 +324,33 @@ export default function SendPage() {
               )}
               {result.status === "ok" && (
                 <div className="rounded-xl border border-tertiary-fixed-dim/20 bg-tertiary-fixed-dim/5 px-4 py-3 text-sm text-tertiary">
-                  Transaction Sucessful
-                  <a href={result.explorerUrl} />
-                  <span className="font-mono tabular-nums">{result.sig}</span>
+                  Transaction Successful —{" "}
+                  <a
+                    href={result.explorerUrl}
+                    target="_blank"
+                    className="underline"
+                  >
+                    View on Explorer ↗
+                  </a>
                 </div>
               )}
+
               <button
                 className="w-full py-5 bg-primary text-on-primary-container rounded-xl font-black text-sm uppercase tracking-[0.2em] shadow-[0_0_30px_rgba(0,245,255,0.2)] hover:scale-[1.01] active:scale-95 transition-all duration-200 mt-4 disabled:opacity-60 disabled:cursor-not-allowed"
                 type="button"
                 onClick={handleSend}
-                disabled={submitting}
+                disabled={submitting || (shield && !ready)}
               >
-                <div>
-                  {/*<Send className="text-on-primary-container" />*/}
-                  {submitting
-                    ? "Sending…"
+                {submitting
+                  ? "Sending…"
+                  : shield && !ready
+                    ? "Initializing Umbra..."
                     : `Send ${shield ? "Private" : "Public"} Payment`}
-                </div>
               </button>
             </form>
           </div>
-          {/* Right column with informational cards left unchanged */}
           <div className="col-span-12 lg:col-span-5 flex flex-col">
-            {/* ... (keep existing decorative/info UI) */}
+            {/* decorative/info UI */}
           </div>
         </div>
       </main>
