@@ -6,6 +6,7 @@ import * as React from "react";
 import {
   ChevronLeft,
   ChevronRight,
+  Download,
   GitBranch,
   History,
   KeyRound,
@@ -71,6 +72,11 @@ export default function Sidebar() {
       href: "/keys",
       label: "Viewing Keys",
       icon: <KeyRound className="h-5 w-5" aria-hidden="true" />,
+    },
+    {
+      href: "/claim",
+      label: "Claim",
+      icon: <Download className="h-5 w-5" aria-hidden="true" />,
     },
   ];
 

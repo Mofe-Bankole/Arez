@@ -1,6 +1,14 @@
 import WalletConnectButton from "@/components/ConnectWalletButton";
 import Sidebar from "@/components/Sidebar";
-import { Bell, Shield } from "lucide-react";
+import {
+  Bell,
+  Shield,
+  EyeOff,
+  EyeClosedIcon,
+  Ticket,
+  Wallet,
+  Plus,
+} from "lucide-react";
 
 export default function ViewingKeys() {
   return (
@@ -10,7 +18,7 @@ export default function ViewingKeys() {
         <header className="sticky top-0 z-50 flex justify-between items-center px-8 w-full h-60 bg-[#131313]/70 backdrop-blur-xl shadow-[0_0_20px_rgba(0,245,255,0.04)]">
           <div className="flex items-center gap-6">
             <h1 className="text-xl font-black text-[#e9feff] tracking-tighter uppercase">
-                Viewing Keys
+              Viewing Keys
             </h1>
           </div>
           <div className="flex items-center gap-4">
@@ -53,7 +61,9 @@ export default function ViewingKeys() {
                 </p>
               </div>
               <button className="flex items-center gap-2 px-6 py-3 stealth-glow text-on-primary-container font-bold rounded-md hover:opacity-90 transition-all">
-                <span className="material-symbols-outlined">add_moderator</span>
+                <span className="material-symbols-outlined">
+                  <Plus />
+                </span>
                 <span className="uppercase tracking-tighter text-sm">
                   Share New Viewing Key
                 </span>
@@ -104,7 +114,7 @@ export default function ViewingKeys() {
                   <div className="space-y-6">
                     <div className="flex gap-4">
                       <span className="material-symbols-outlined text-tertiary-fixed-dim text-lg">
-                        visibility
+                        <EyeClosedIcon />
                       </span>
                       <p className="text-xs text-on-surface-variant leading-normal">
                         <strong className="text-on-surface block mb-1 uppercase tracking-tighter">
@@ -149,7 +159,7 @@ export default function ViewingKeys() {
                       <div className="flex items-center gap-6">
                         <div className="w-10 h-10 rounded bg-surface-container-highest flex items-center justify-center">
                           <span className="material-symbols-outlined text-[#e5e2e1]/40">
-                            corporate_fare
+                            <Ticket />
                           </span>
                         </div>
                         <div>
@@ -177,15 +187,13 @@ export default function ViewingKeys() {
                               data-weight="fill"
                               title="Payroll View"
                             >
-                              account_balance_wallet
+                              <Wallet />
                             </span>
                             <span
                               className="material-symbols-outlined text-[16px] text-primary-container"
                               data-weight="fill"
                               title="Metadata access"
-                            >
-                              description
-                            </span>
+                            ></span>
                             <span
                               className="material-symbols-outlined text-[16px] text-on-surface-variant/20"
                               title="No batch access"
