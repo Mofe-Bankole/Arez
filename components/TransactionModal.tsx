@@ -98,7 +98,7 @@ export default function TransactionModal({
               <span className="text-[#e5e2e1]/40">Network</span>
               <div className="flex items-center space-x-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#00f5ff] shadow-[0_0_8px_#00f5ff]" />
-                <span className="text-[#e5e2e1]">{network}</span>
+                <span className="text-[#e5e2e1] uppercase">{network}</span>
               </div>
             </div>
             <div className="flex justify-between items-center text-sm">
@@ -114,7 +114,7 @@ export default function TransactionModal({
                 href={explorerURL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-full py-3 bg-[#e9feff] text-[#131313] text-center font-bold text-sm rounded-md hover:bg-white active:scale-95 transition-all"
+                className="block cursor-pointer w-full py-3 bg-[#e9feff] text-[#131313] text-center font-bold text-sm rounded-md hover:bg-white active:scale-95 transition-all"
               >
                 View on Explorer
               </a>
@@ -122,7 +122,7 @@ export default function TransactionModal({
             <button
               className="block w-full py-3 bg-[#1c1b1b] text-[#e5e2e1] text-center font-bold text-sm rounded-md border border-[#3a494a]/20 hover:bg-[#2a2a2a] transition-all"
               onClick={() => {
-                router.push("/send");
+                router.push("/home");
               }}
             >
               Return to Dashboard

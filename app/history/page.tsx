@@ -2,14 +2,19 @@
 
 import Sidebar from "@/components/Sidebar";
 import "../globals.css";
-import { Bell, Download, Filter, Search } from "lucide-react";
-import { useWallet, useConnection } from "@solana/wallet-adapter-react";
-import { useEffect, useState } from "react";
+import { Download, Filter, Search } from "lucide-react";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import {
-  ConfirmedSignatureInfo,
   Connection,
+  ConfirmedSignatureInfo,
   ParsedTransactionWithMeta,
+  PublicKey,
 } from "@solana/web3.js";
+import { config } from "@/lib/config";
+import BoardHeader from "@/components/BoardHeader";
+
+const connection = new Connection(config.devnet_rpc, "confirmed");
 
 type TxRow = {
   signature: string;
@@ -45,12 +50,9 @@ async function parseTx(
   let token = "SOL";
 
   try {
-    const instructions = tx.transaction.message.instructions as any[];
     const accountKeys = tx.transaction.message.accountKeys.map(
       (k: any) => k.pubkey?.toString() ?? k.toString(),
     );
-
-    // Try to find SOL transfer
     const preBalances = tx.meta?.preBalances ?? [];
     const postBalances = tx.meta?.postBalances ?? [];
     const walletIdx = accountKeys.indexOf(walletAddress);
@@ -61,7 +63,6 @@ async function parseTx(
         amount = Math.abs(diff).toFixed(4);
         token = "SOL";
         type = diff > 0 ? "Received" : "Sent";
-        // counterparty is the other main account
         const otherIdx = accountKeys.findIndex(
           (k: string, i: number) =>
             i !== walletIdx &&
@@ -72,7 +73,6 @@ async function parseTx(
       }
     }
 
-    // Try SPL token transfers
     const tokenBalances = tx.meta?.postTokenBalances ?? [];
     const preTokenBalances = tx.meta?.preTokenBalances ?? [];
 
@@ -121,58 +121,113 @@ async function parseTx(
 
 export default function HistoryPage() {
   const { publicKey } = useWallet();
-  const connection = new Connection(
-    "https://devnet.helius-rpc.com/?api-key=ff8f61f5-4d72-435f-bb78-d8adbda03297",
-  );
   const [txRows, setTxRows] = useState<TxRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const [hasFetched, setHasFetched] = useState(false);
+  const fetchTxs = async () => {
+    try {
+      const sigs = await connection.getSignaturesForAddress(
+        publicKey as PublicKey,
+        {
+          limit: 5,
+        },
+      );
 
-  useEffect(() => {
-    if (!publicKey) return;
-
-    const fetchTxs = async () => {
-      setLoading(true);
-      try {
-        const sigs = await connection.getSignaturesForAddress(publicKey, {
-          limit: 20,
-        });
-        const parsed = await connection.getParsedTransactions(
-          sigs.map((s) => s.signature),
-          { maxSupportedTransactionVersion: 0 },
-        );
-
-        const rows: TxRow[] = [];
-        for (let i = 0; i < sigs.length; i++) {
-          const tx = parsed[i];
-          if (!tx) continue;
-          const row = await parseTx(tx, sigs[i], publicKey.toString());
-          rows.push(row);
-        }
-        setTxRows(rows);
-      } catch (err) {
-        console.error("Failed to fetch transactions:", err);
-      } finally {
-        setLoading(false);
+      if (sigs.length === 0) {
+        setTxRows([]);
+        return;
       }
-    };
 
-    fetchTxs();
-  }, [publicKey, connection]);
+      // ✅ fetch in one batch, not individually
+      const parsed = await connection.getParsedTransactions(
+        sigs.map((s) => s.signature),
+        { maxSupportedTransactionVersion: 0 },
+      );
 
-  const filtered = txRows.filter(
-    (tx) =>
-      search === "" ||
-      tx.signature.toLowerCase().includes(search.toLowerCase()) ||
-      tx.counterparty.toLowerCase().includes(search.toLowerCase()),
+      const rows: TxRow[] = [];
+      for (let i = 0; i < sigs.length; i++) {
+        const tx = parsed[i];
+        if (!tx) continue;
+        const row = await parseTx(tx, sigs[i], publicKey.toString());
+        rows.push(row);
+      }
+      setTxRows(rows);
+    } catch (err) {
+      console.error("Failed to fetch transactions:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleRefresh = async () => {
+    if (!publicKey) return;
+    setHasFetched(true);
+    await fetchTxs();
+  };
+
+  // useEffect(() => {
+  //   if (!publicKey) return;
+  //   if (hasFetched.current) return; // ✅ only fetch once per mount
+  //   hasFetched.current = true;
+
+  //   const fetchTxs = async () => {
+  //     setLoading(true);
+  //     try {
+  //       const sigs = await connection.getSignaturesForAddress(publicKey, {
+  //         limit: 5,
+  //       });
+
+  //       if (sigs.length === 0) {
+  //         setTxRows([]);
+  //         return;
+  //       }
+
+  //       // ✅ fetch in one batch, not individually
+  //       const parsed = await connection.getParsedTransactions(
+  //         sigs.map((s) => s.signature),
+  //         { maxSupportedTransactionVersion: 0 },
+  //       );
+
+  //       const rows: TxRow[] = [];
+  //       for (let i = 0; i < sigs.length; i++) {
+  //         const tx = parsed[i];
+  //         if (!tx) continue;
+  //         const row = await parseTx(tx, sigs[i], publicKey.toString());
+  //         rows.push(row);
+  //       }
+  //       setTxRows(rows);
+  //     } catch (err) {
+  //       console.error("Failed to fetch transactions:", err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchTxs();
+  // }, [publicKey]); // ✅ only re-run if publicKey changes
+
+  // ✅ reset hasFetched when wallet changes so new wallet triggers fresh fetch
+  // useEffect(() => {
+  //   hasFetched.current = false;
+  // }, [publicKey]);
+
+  const filtered = useMemo(
+    () =>
+      txRows.filter(
+        (tx) =>
+          search === "" ||
+          tx.signature.toLowerCase().includes(search.toLowerCase()) ||
+          tx.counterparty.toLowerCase().includes(search.toLowerCase()),
+      ),
+    [txRows, search],
   );
 
   return (
     <div className="flex h-screen w-full">
       <Sidebar />
       <main className="flex-1 flex flex-col bg-surface overflow-y-auto relative">
+        <BoardHeader title="History" />
         <section className="p-8 mx-auto w-full">
-          {/* Header */}
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
             <div className="max-w-xl">
               <h2 className="text-4xl font-bold tracking-tighter text-on-surface mb-2">
@@ -205,9 +260,7 @@ export default function HistoryPage() {
             </div>
           </div>
 
-          {/* Table */}
           <div className="grid grid-cols-1 gap-px bg-outline-variant/10 rounded-xl overflow-hidden shadow-2xl">
-            {/* Header */}
             <div className="grid grid-cols-12 gap-4 bg-surface-container-lowest py-4 px-6 text-[10px] font-black uppercase tracking-[0.15em] text-on-surface-variant/40">
               <div className="col-span-2">Date & Time</div>
               <div className="col-span-2">Type</div>
@@ -216,7 +269,6 @@ export default function HistoryPage() {
               <div className="col-span-2 text-right">Status</div>
             </div>
 
-            {/* States */}
             {!publicKey && (
               <div className="py-16 text-center text-on-surface-variant/50 text-sm bg-surface-container-low">
                 Connect your wallet to view transaction history.
@@ -229,17 +281,21 @@ export default function HistoryPage() {
               </div>
             )}
 
-            {publicKey && !loading && filtered.length === 0 && (
-              <div className="py-16 text-center text-on-surface-variant/50 text-sm bg-surface-container-low">
-                No transactions found.
+            {publicKey && !hasFetched && (
+              <div className="py-16 text-center bg-surface-container-low">
+                <button
+                  onClick={handleRefresh}
+                  className="px-6 py-3 bg-primary text-on-primary-container rounded-xl font-black text-xs uppercase tracking-widest"
+                >
+                  Load Transactions
+                </button>
               </div>
             )}
 
-            {/* Rows */}
             {filtered.map((tx, i) => (
               <div
                 key={tx.signature}
-                className={`grid grid-cols-12 gap-4 py-6 px-6 items-center hover:bg-surface-container transition-all group cursor-pointer border-t border-outline-variant/5 ${
+                className={`grid grid-cols-12 gap-4 py-6 px-6 items-center hover:bg-surface-container transition-all cursor-pointer border-t border-outline-variant/5 ${
                   i % 2 === 0 ? "bg-surface-container-low" : "bg-surface"
                 }`}
                 onClick={() =>
@@ -249,7 +305,6 @@ export default function HistoryPage() {
                   )
                 }
               >
-                {/* Date */}
                 <div className="col-span-2 flex flex-col">
                   <span className="text-sm font-bold text-on-surface">
                     {tx.date}
@@ -259,7 +314,6 @@ export default function HistoryPage() {
                   </span>
                 </div>
 
-                {/* Type */}
                 <div className="col-span-2">
                   <div
                     className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-black uppercase tracking-wider ${
@@ -274,7 +328,6 @@ export default function HistoryPage() {
                   </div>
                 </div>
 
-                {/* Counterparty */}
                 <div className="col-span-3 flex items-center gap-3">
                   <div className="w-8 h-8 rounded bg-surface-container-highest flex items-center justify-center text-on-surface-variant/30 text-xs font-mono">
                     {tx.counterparty.slice(0, 2)}
@@ -284,7 +337,6 @@ export default function HistoryPage() {
                   </span>
                 </div>
 
-                {/* Amount */}
                 <div className="col-span-3">
                   <span className="text-lg font-bold tracking-tight text-on-surface">
                     {tx.amount}
@@ -294,11 +346,10 @@ export default function HistoryPage() {
                   </span>
                 </div>
 
-                {/* Status */}
                 <div className="col-span-2 text-right">
                   {tx.status === "confirmed" ? (
                     <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tertiary-container/10 text-tertiary-fixed-dim border border-tertiary-fixed-dim/20">
-                      <span className="w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim" />
                       <span className="text-[10px] font-black uppercase tracking-widest">
                         Confirmed
                       </span>
@@ -315,7 +366,6 @@ export default function HistoryPage() {
             ))}
           </div>
 
-          {/* Footer */}
           <div className="mt-8 flex items-center justify-between px-2">
             <span className="text-[10px] font-bold uppercase text-on-surface-variant/40 tracking-widest">
               Showing {filtered.length} of {txRows.length} transactions

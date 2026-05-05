@@ -7,6 +7,8 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import SideBar from "@/components/Sidebar";
 import BoardHeader from "@/components/BoardHeader";
 import { Loader2, CheckCircle2, ShieldCheck } from "lucide-react";
+import { createU32 } from "@umbra-privacy/sdk/utils";
+import { getClaimableUtxoScannerFunction } from "@umbra-privacy/sdk";
 
 export default function ClaimPage() {
   const { publicKey } = useWallet();
@@ -22,6 +24,26 @@ export default function ClaimPage() {
     if (publicKey && !ready && !loading) initializeClient();
   }, [publicKey, ready, loading]);
 
+  const handleDebug = async () => {
+    if (!umbraClient) return;
+    const client = umbraClient;
+    // scan all trees aggressively
+    for (let tree = 0; tree <= 5; tree++) {
+      try {
+        const fetchUtxos = getClaimableUtxoScannerFunction({ client });
+        const { received } = await fetchUtxos(
+          createU32(BigInt(tree)),
+          createU32(BigInt(0)),
+        );
+        console.log(`Tree ${tree}: ${received.length} UTXOs`);
+        if (received.length > 0) {
+          console.log(`Tree ${tree} UTXOs:`, JSON.stringify(received, null, 2));
+        }
+      } catch (err) {
+        console.log(`Tree ${tree}: error -`, err);
+      }
+    }
+  };
   const handleScanAndClaim = async () => {
     if (!umbraClient) return;
     setScanning(true);
@@ -82,9 +104,16 @@ export default function ClaimPage() {
                 No claimable UTXOs found for this wallet.
               </p>
             )}
-            {error && <p className="text-sm text-red-400 pt-2">{error}</p>}
+            {error && (
+              <p className="text-sm text-red-400 pt-2">{error} big bug</p>
+            )}
           </div>
-
+          <button
+            onClick={handleDebug}
+            className="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg text-xs font-bold"
+          >
+            Debug Scan All Trees
+          </button>
           <button
             onClick={handleScanAndClaim}
             disabled={!ready || scanning}

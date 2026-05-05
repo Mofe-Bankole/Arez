@@ -19,6 +19,7 @@ import {
 import { getPublicBalanceToReceiverClaimableUtxoCreatorFunction } from "@umbra-privacy/sdk";
 import { address } from "@solana/kit";
 import { createU64 } from "@umbra-privacy/sdk/utils";
+import { config } from "./config";
 
 /**
  * Payload for a public payment.
@@ -91,10 +92,7 @@ export async function publicPayment(
     };
   }
 
-  const connection = new Connection(
-    "https://api.devnet.solana.com",
-    "confirmed",
-  );
+  const connection = new Connection(config.devnet_rpc, "confirmed");
 
   // ---------- Build transaction ----------
   const recipientPubkey = new PublicKey(payload.recipient);

@@ -54,18 +54,12 @@ export async function createUmbraClientFromWallet() {
   const account = accounts[0];
   const signer = createSignerFromWalletAccount(wallet!, account);
 
-  console.log("RPC config:", {
-    rpcUrl: process.env.DEVNET_RPC_URL as string,
-    rpcSubscriptionsUrl: config.devnet_rpc_subscription_url,
-    indexerApiEndpoint: config.indexerApiEndpoint,
-  });
-
   return await getUmbraClient({
     signer,
     network: "devnet",
-    rpcUrl: "https://api.devnet.solana.com",
-    rpcSubscriptionsUrl: "wss://api.devnet.solana.com",
-    indexerApiEndpoint: "https://utxo-indexer.api.umbraprivacy.com",
+    rpcUrl: config.devnet_rpc,
+    rpcSubscriptionsUrl: config.devnet_rpc_subscription_url,
+    indexerApiEndpoint: config.indexerApiEndpoint,
     deferMasterSeedSignature: true,
   });
 }

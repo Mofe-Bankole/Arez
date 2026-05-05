@@ -84,21 +84,8 @@ export default function SendPage() {
         };
 
         const tx = await SendPrivatePayment(payload);
-        console.log("🔒 Private tx result:", JSON.stringify(tx, null, 2));
 
-        // extract signature — adjust field name once you see the log above
-        // const sig =
-        //   tx?.signature ??
-        //   tx?.transactionSignature ??
-        //   tx?.txId ??
-        //   tx?.id ??
-        //   "confirmed";
-
-        // const explorerUrl = `https://explorer.solana.com/tx/${sig}?cluster=devnet`;
-
-        // setTxSig(sig);
-        // setTxExplorerUrl(explorerUrl);
-        // setResult({ status: "ok", sig, explorerUrl });
+        setTxSig(tx.createUtxoSignature.toString());
         setSuccessModal(true);
       } else {
         // 📢 PUBLIC PATH
