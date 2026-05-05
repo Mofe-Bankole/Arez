@@ -21,7 +21,7 @@ export function useBalances(opts?: { pollMs?: number }) {
   const pollMs = opts?.pollMs ?? 15_000;
   const { connection } = useConnection();
   const { publicKey, connected } = useWallet();
-
+  const j = new Date
   const usdcMint = useMemo(() => new PublicKey(USDC_MINT_DEVNET), []);
   const [state, setState] = useState<BalancesState>({ status: "disconnected" });
 
