@@ -88,7 +88,6 @@ export default function SendPage() {
         setTxSig(tx.createUtxoSignature.toString());
         setSuccessModal(true);
       } else {
-        // 📢 PUBLIC PATH
         const res = await sendPublic({
           mode: "public",
           recipient,

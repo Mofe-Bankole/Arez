@@ -217,8 +217,8 @@ export async function SendPrivatePayment(payload: ArezPrivateTransferPayload) {
   const AMOUNT = payload.amount;
 
   const tx = await createUtxo({
-    destinationAddress: address(RECIPIENT),
-    mint: address(MINT),
+    destinationAddress: RECIPIENT,
+    mint: MINT,
     amount: createU64(BigInt(AMOUNT * LAMPORTS_PER_SOL)),
   });
 

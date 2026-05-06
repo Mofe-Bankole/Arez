@@ -1,4 +1,6 @@
+// @ts-ignore
 import {
+  enrichWithMerkleProof,
   getClaimableUtxoScannerFunction,
   getReceiverClaimableUtxoToEncryptedBalanceClaimerFunction,
   getUmbraRelayer,
@@ -10,9 +12,12 @@ import { createU32 } from "@umbra-privacy/sdk/utils";
 
 export async function scanAndClaimUtxos(client: IUmbraClient) {
   const fetchUtxos = getClaimableUtxoScannerFunction({ client });
+  console.log(client.signer);
+  console.log(client);
   const { received } = await fetchUtxos(
-    createU32(BigInt(0)),
-    createU32(BigInt(0)),
+    createU32(0n), // start tree
+    createU32(0n), // start insertion index
+    createU32(1000n), // end insertion index — catch everything up to leaf 1000
   );
   console.log(received);
   console.log("Found claimable UTXOs : ", received.length);
@@ -21,14 +26,14 @@ export async function scanAndClaimUtxos(client: IUmbraClient) {
 
   const zkProver = getClaimReceiverClaimableUtxoIntoEncryptedBalanceProver();
   const relayer = getUmbraRelayer({
-    apiEndpoint: config.umbra_relayer,
+    apiEndpoint: "https://relayer.api-devnet.umbraprivacy.com",
   });
 
   const claim = getReceiverClaimableUtxoToEncryptedBalanceClaimerFunction(
     {
       client,
     },
-    { zkProver, relayer },
+    { zkProver: zkProver, relayer },
   );
 
   const results = [];

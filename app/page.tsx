@@ -12,6 +12,7 @@ import {
   Shield,
   Zap,
   EyeOff,
+  ArrowRight,
 } from "lucide-react";
 
 export default function Home() {
@@ -94,8 +95,9 @@ export default function Home() {
               through zero-knowledge proofs.
             </p>
             <div className="flex flex-wrap gap-4 pt-10 justify-center">
-              <button className="px-10 py-4 glow-button text-on-primary-container font-black text-sm uppercase tracking-[0.2em] rounded-md hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_0_1px_rgba(0,245,255,0.15)]">
+              <button className="px-10 flex flex-row align-center py-4 glow-button text-on-primary-container font-black text-sm uppercase tracking-[0.2em] rounded-md hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_0_1px_rgba(0,245,255,0.15)]">
                 Shield &amp; Send
+                <ArrowRight />
               </button>
               <button className="px-10 py-4 bg-transparent border border-outline-variant text-primary font-black text-sm uppercase tracking-[0.2em] rounded-md hover:bg-surface-container-high transition-all">
                 Try Demo
@@ -150,6 +152,21 @@ export default function Home() {
 
                   <span className="font-bold tracking-tighter text-lg uppercase">
                     Arcium
+                  </span>
+                </a>
+                <a
+                  className="flex items-center gap-2"
+                  href="https://www.helius.dev/"
+                >
+                  <img
+                    src="https://www.helius.dev/_next/image?url=%2FHelius-Brandkit%2FHelius%2FHelius-Icon.svg&w=256&q=75"
+                    alt="Helius Logo"
+                    className="h-6 w-auto"
+                    style={{ display: "inline-block", verticalAlign: "middle" }}
+                  />
+
+                  <span className="font-bold tracking-tighter text-lg uppercase">
+                    Helius
                   </span>
                 </a>
               </div>

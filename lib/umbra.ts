@@ -53,12 +53,12 @@ export async function createUmbraClientFromWallet() {
 
   const account = accounts[0];
   const signer = createSignerFromWalletAccount(wallet!, account);
-
+  console.log(config);
   return await getUmbraClient({
     signer,
     network: "devnet",
-    rpcUrl: config.devnet_rpc,
-    rpcSubscriptionsUrl: config.devnet_rpc_subscription_url,
+    rpcUrl: "https://api.devnet.solana.com",
+    rpcSubscriptionsUrl: "wss://api.devnet.solana.com",
     indexerApiEndpoint: config.indexerApiEndpoint,
     deferMasterSeedSignature: true,
   });

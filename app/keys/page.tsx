@@ -8,6 +8,9 @@ import {
   Ticket,
   Wallet,
   Plus,
+  Verified,
+  TimerReset,
+  CalendarRange,
 } from "lucide-react";
 
 export default function ViewingKeys() {
@@ -125,7 +128,7 @@ export default function ViewingKeys() {
                     </div>
                     <div className="flex gap-4">
                       <span className="material-symbols-outlined text-primary-container text-lg">
-                        date_range
+                        <CalendarRange/>
                       </span>
                       <p className="text-xs text-on-surface-variant leading-normal">
                         <strong className="text-on-surface block mb-1 uppercase tracking-tighter">
@@ -398,7 +401,7 @@ export default function ViewingKeys() {
                 <div className="relative p-6 ghost-border rounded-xl bg-primary-container/[0.02]">
                   <div className="flex items-start gap-4">
                     <span className="material-symbols-outlined text-tertiary-fixed-dim">
-                      verified
+                      <Verified />
                     </span>
                     <div>
                       <h5 className="text-xs font-bold uppercase text-on-surface mb-2">
@@ -427,7 +430,7 @@ export default function ViewingKeys() {
         </main>
         <button className="fixed bottom-8 right-8 flex items-center justify-center w-14 h-14 bg-error text-on-error rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all z-50 group">
           <span className="material-symbols-outlined group-hover:rotate-12 transition-transform">
-            lock_reset
+            <TimerReset />
           </span>
           <div className="absolute right-full mr-4 px-3 py-1 bg-surface-container-highest text-error text-[10px] font-black uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none rounded">
             Emergency Revoke All
