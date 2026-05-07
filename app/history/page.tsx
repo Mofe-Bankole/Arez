@@ -149,6 +149,7 @@ export default function HistoryPage() {
       for (let i = 0; i < sigs.length; i++) {
         const tx = parsed[i];
         if (!tx) continue;
+        if (!publicKey) return;
         const row = await parseTx(tx, sigs[i], publicKey.toString());
         rows.push(row);
       }
