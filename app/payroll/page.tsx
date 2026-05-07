@@ -185,12 +185,7 @@ export default function PayrollPage() {
         const tx = await SendPrivatePayment(payload);
         console.log(`Row ${i} tx:`, JSON.stringify(tx, null, 2));
 
-        const sig =
-          tx?.signature ??
-          tx?.transactionSignature ??
-          tx?.txId ??
-          tx?.id ??
-          "confirmed";
+        const sig = "confirmed";
 
         setBatchRows((prev) =>
           prev.map((r, idx) =>
