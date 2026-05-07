@@ -544,8 +544,8 @@ export default function PayrollPage() {
                 </h5>
                 <p className="text-xs text-outline font-medium">
                   {shieldAll
-                    ? "🔒 All transfers will be shielded via Umbra mixer"
-                    : "⚠️ Transfers will be public on-chain"}
+                    ? "All transfers will be shielded via Umbra mixer"
+                    : "Transfers will be public on-chain"}
                 </p>
               </div>
 
@@ -563,19 +563,19 @@ export default function PayrollPage() {
                     totalRecipients === 0 || isExecuting || pendingCount === 0
                   }
                   onClick={handleExecute}
-                  className="px-12 py-5 bg-gradient-to-br from-primary-container to-primary-fixed-dim text-on-primary-container text-sm font-black uppercase tracking-[0.2em] rounded-xl shadow-[0_0_40px_rgba(0,245,255,0.2)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center space-x-4 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  className="px-10 flex flex-row items-center align-center py-4 glow-button text-on-primary-container font-black text-sm uppercase tracking-[0.2em] rounded-md hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_0_1px_rgba(0,245,255,0.15)]"
                 >
                   {isExecuting ? (
                     <Loader2 className="h-5 w-5 animate-spin" />
                   ) : (
                     <Lock className="h-5 w-5" />
                   )}
-                  <span>
+                  <span className="ml-[10px]">
                     {isExecuting
                       ? "Executing..."
                       : isDone
                         ? "Batch Complete"
-                        : "Execute Private Batch Transfer"}
+                        : `Execute ${shieldAll ? "Private" : "Public"} Batch Transfer`}
                   </span>
                 </button>
               </div>
@@ -584,17 +584,6 @@ export default function PayrollPage() {
         </div>
 
         {/* Branding watermark */}
-        <div className="absolute bottom-6 right-6 opacity-20 pointer-events-none">
-          <div className="flex items-center space-x-2">
-            <ShieldCheck
-              className="h-10 w-10 text-primary-container animate-pulse"
-              aria-hidden="true"
-            />
-            <div className="text-[10px] font-bold text-primary-container tracking-[0.3em] uppercase">
-              Powered by Arez ZK-Shield
-            </div>
-          </div>
-        </div>
       </main>
     </div>
   );

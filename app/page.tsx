@@ -14,8 +14,10 @@ import {
   EyeOff,
   ArrowRight,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
   console.log(config);
   return (
     <div className="flex flex-col min-h-screen bg-zinc-50 dark:bg-black">
@@ -97,10 +99,10 @@ export default function Home() {
             <div className="flex flex-wrap gap-4 pt-10 justify-center">
               <button className="px-10 flex flex-row align-center py-4 glow-button text-on-primary-container font-black text-sm uppercase tracking-[0.2em] rounded-md hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_0_1px_rgba(0,245,255,0.15)]">
                 Shield &amp; Send
-                <ArrowRight />
+                {/*<ArrowRight />*/}
               </button>
               <button className="px-10 py-4 bg-transparent border border-outline-variant text-primary font-black text-sm uppercase tracking-[0.2em] rounded-md hover:bg-surface-container-high transition-all">
-                Try Demo
+                Watch Demo
               </button>
             </div>
             {/* <!-- Trust Signals --> */}
@@ -217,7 +219,7 @@ export default function Home() {
                   className="h-10 w-10 text-tertiary-fixed-dim"
                   aria-hidden="true"
                 />
-                <h3 className="text-xl font-bold uppercase tracking-tight">
+                <h3 className="text-3xl font-black uppercase tracking-tight">
                   Viewing Keys
                 </h3>
                 <p className="text-sm text-on-surface-variant leading-relaxed">
@@ -232,7 +234,7 @@ export default function Home() {
                   className="h-10 w-10 text-primary-container"
                   aria-hidden="true"
                 />
-                <h3 className="text-xl font-bold uppercase tracking-tight">
+                <h3 className="text-3xl font-black uppercase tracking-tight">
                   Solana Speed
                 </h3>
                 <p className="text-sm text-on-surface-variant leading-relaxed">
@@ -383,12 +385,12 @@ export default function Home() {
               Solana ecosystem.
             </p>
             <div className="mt-12 flex w-full max-w-lg flex-col gap-4 sm:flex-row sm:justify-center sm:gap-5">
-              <WalletConnectButton />
               <button
                 type="button"
+                onClick={() => router.push("/home")}
                 className="w-full px-10 py-5 bg-surface-container-highest text-primary font-black text-base uppercase tracking-[0.2em] rounded-md border border-outline-variant transition-all hover:bg-surface-container sm:w-auto sm:min-w-[240px]"
               >
-                Book a Demo
+                Visit Dashboard
               </button>
             </div>
           </div>
@@ -429,63 +431,6 @@ export default function Home() {
                 <Share2 className="h-5 w-5" aria-hidden="true" />
               </button>
             </div>
-          </div>
-          <div className="space-y-6">
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-container">
-              Platform
-            </h4>
-            <ul className="space-y-4 text-sm text-outline">
-              <li className="hover:text-primary transition-colors">
-                <a href="#">Dashboard</a>
-              </li>
-              <li className="hover:text-primary transition-colors">
-                <a href="#">Viewing Keys</a>
-              </li>
-              <li className="hover:text-primary transition-colors">
-                <a href="#">Compliance</a>
-              </li>
-              <li className="hover:text-primary transition-colors">
-                <a href="#">Integrations</a>
-              </li>
-            </ul>
-          </div>
-          <div className="space-y-6">
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-container">
-              Technology
-            </h4>
-            <ul className="space-y-4 text-sm text-outline">
-              <li className="hover:text-primary transition-colors">
-                <a href="#">Whitepaper</a>
-              </li>
-              <li className="hover:text-primary transition-colors">
-                <a href="#">ZK-Proofs</a>
-              </li>
-              <li className="hover:text-primary transition-colors">
-                <a href="#">Solana Core</a>
-              </li>
-              <li className="hover:text-primary transition-colors">
-                <a href="#">Security Audit</a>
-              </li>
-            </ul>
-          </div>
-          <div className="space-y-6">
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary-container">
-              Company
-            </h4>
-            <ul className="space-y-4 text-sm text-outline">
-              <li className="hover:text-primary transition-colors">
-                <a href="#">About</a>
-              </li>
-              <li className="hover:text-primary transition-colors">
-                <a href="#">Privacy</a>
-              </li>
-              <li className="hover:text-primary transition-colors">
-                <a href="#">Terms</a>
-              </li>
-              <li className="hover:text-primary transition-colors">
-                <a href="#">Contact</a>
-              </li>
-            </ul>
           </div>
         </div>
         <div className="container mx-auto mt-20 pt-8 border-t border-outline-variant/10 flex flex-col md:flex-row justify-between items-center gap-4">
