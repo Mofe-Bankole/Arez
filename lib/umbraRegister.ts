@@ -1,8 +1,9 @@
 import { getUserRegistrationFunction } from "@umbra-privacy/sdk";
+import { IUmbraClient } from "@umbra-privacy/sdk/interfaces";
 import { getUserRegistrationProver } from "@umbra-privacy/web-zk-prover";
 
 type Props = {
-  umbraClient: any;
+  umbraClient: IUmbraClient;
 };
 
 const prover = getUserRegistrationProver();
