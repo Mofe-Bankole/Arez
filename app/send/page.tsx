@@ -85,6 +85,11 @@ export default function SendPage() {
 
         const tx = await SendPrivatePayment(payload);
 
+        if (!tx) {
+          // console.log("Transaction was not successful");
+          return;
+        }
+
         setTxSig(tx.createUtxoSignature.toString());
         setSuccessModal(true);
       } else {
@@ -142,11 +147,7 @@ export default function SendPage() {
                 ⏳ Initializing Umbra client...
               </div>
             )}
-            {ready && (
-              <div className="text-xs text-green-400">
-                🔒 Umbra client ready — private transfers enabled
-              </div>
-            )}
+
             {!ready && !loading && publicKey && (
               <div
                 className="text-xs text-yellow-400 cursor-pointer"

@@ -16,7 +16,10 @@ import {
   IUmbraClient,
   ZkProverForReceiverClaimableUtxoFromPublicBalance,
 } from "@umbra-privacy/sdk/interfaces";
-import { getPublicBalanceToReceiverClaimableUtxoCreatorFunction } from "@umbra-privacy/sdk";
+import {
+  getPublicBalanceToReceiverClaimableUtxoCreatorFunction,
+  isCreateUtxoError,
+} from "@umbra-privacy/sdk";
 import { address } from "@solana/kit";
 import { createU64 } from "@umbra-privacy/sdk/utils";
 import { config } from "./config";
@@ -208,19 +211,70 @@ export const SendPublicPayment = (payload: PaymentRequest) => {
 };
 
 export async function SendPrivatePayment(payload: ArezPrivateTransferPayload) {
+  // Force USDC devnet/mainnet mint (the only supported token for this demo).
+  // Users cannot send native SOL privately – they must use USDC.
+  const USDC_MINT = "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU";
+  // payload.mint = USDC_MINT;
+
+  // Persist the mint so the Claim page knows which token to scan.
+  if (typeof window !== "undefined") {
+    try {
+      window.localStorage.setItem("lastPrivateMint", payload.mint);
+    } catch (e) {
+      console.warn("Unable to store lastPrivateMint", e);
+    }
+  }
   const createUtxo = getPublicBalanceToReceiverClaimableUtxoCreatorFunction(
     { client: payload.client },
     { zkProver: payload.zkProver },
   );
   const RECIPIENT = payload.recipient;
-  const MINT = payload.mint;
+  const MINT = USDC_MINT;
   const AMOUNT = payload.amount;
 
-  const tx = await createUtxo({
-    destinationAddress: address(RECIPIENT),
-    mint: address(MINT),
-    amount: createU64(BigInt(AMOUNT * LAMPORTS_PER_SOL)),
-  });
+  try {
+    const tx = await createUtxo({
+      destinationAddress: address(RECIPIENT),
+      mint: address(MINT),
+      amount: createU64(1000000n),
+    });
+    // console.log(tx.createUtxoSignature);
+    return tx;
+  } catch (err) {
+    if (isCreateUtxoError(err)) {
+      switch (err.stage) {
+        case "zk-proof-generation":
+          // ZK proof generation failed - the most common failure mode for UTXO creation.
+          // This may indicate an out-of-memory condition in the browser,
+          // or a mismatch between the prover and the circuit parameters.
+          console.error("Proof generation failed:", err.message);
+          // showNotification("Failed to generate proof. Please try again.");
+          break;
 
-  return tx;
+        case "transaction-sign":
+          // User rejected the transaction in their wallet.
+          console.log("UTXO creation cancelled.");
+          break;
+
+        case "account-fetch":
+          // Could not fetch the recipient's on-chain account to look up their X25519 key.
+          console.error("RPC error:", err.message);
+          break;
+
+        case "transaction-send":
+          // Transaction submitted but confirmation failed - may still have landed.
+          // Check whether the commitment was inserted before retrying.
+          console.warn("Confirmation timeout. Check on-chain before retrying.");
+          break;
+
+        default:
+          // Other stages: initialization, validation, mint-fetch, fee-calculation,
+          // key-derivation, pda-derivation, instruction-build, transaction-build,
+          // transaction-compile, transaction-validate.
+          console.error("UTXO creation failed at stage:", err.stage, err);
+      }
+    } else {
+      throw err;
+    }
+  }
 }

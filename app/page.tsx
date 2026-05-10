@@ -18,9 +18,8 @@ import { useRouter } from "next/navigation";
 
 export default function Home() {
   const router = useRouter();
-  console.log(config);
   return (
-    <div className="flex flex-col min-h-screen bg-zinc-50 dark:bg-black">
+    <div className="flex flex-col min-h-screen bg-black">
       <nav className="sticky top-0 z-50 flex justify-between items-center px-8 w-full bg-[#131313]/70 backdrop-blur-xl h-16 shadow-[0_0_20px_rgba(0,245,255,0.04)]">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 flex items-center justify-center bg-primary-container rounded-lg">
@@ -59,9 +58,9 @@ export default function Home() {
             Payroll
           </a>
         </div>
-        <div className="flex items-center gap-4">
+        {/*<div className="flex items-center gap-4">
           <WalletConnectButton />
-        </div>
+        </div>*/}
       </nav>
 
       <main className="flex-1 w-full">
@@ -222,7 +221,7 @@ export default function Home() {
                 <h3 className="text-3xl font-black uppercase tracking-tight">
                   Viewing Keys
                 </h3>
-                <p className="text-sm text-on-surface-variant leading-relaxed">
+                <p className="text-lg text-on-surface-variant leading-relaxed">
                   Granular transparency. Generate one-time or permanent viewing
                   keys to give tax authorities, auditors, or investors selective
                   visibility without exposing your entire treasury.
@@ -237,10 +236,18 @@ export default function Home() {
                 <h3 className="text-3xl font-black uppercase tracking-tight">
                   Solana Speed
                 </h3>
-                <p className="text-sm text-on-surface-variant leading-relaxed">
+                <p className="text-lg text-on-surface-variant leading-relaxed">
                   Privacy doesn&apos;t have to be slow. Leveraging the
-                  high-throughput architecture of Solana, Arez processes
-                  thousands of private payments in seconds with sub-cent fees.
+                  high-throughput architecture of Solana and RPC infra from{" "}
+                  <a
+                    href="https://helius.dev"
+                    className="text-[#E84125] font-bold"
+                    target="_blank"
+                  >
+                    Helius
+                  </a>
+                  , Arez processes thousands of private payments in seconds with
+                  sub-cent fees.
                 </p>
               </div>
               {/* <!-- Feature 4 --> */}
@@ -255,10 +262,10 @@ export default function Home() {
                       Batch Efficiency
                     </h3>
                     <p className="text-on-surface-variant leading-relaxed">
-                      Upload a single CSV and distribute payments to 1,000+
-                      contributors in a single transaction. Each recipient
-                      receives their funds in a private stealth address unique
-                      to them.
+                      Upload a CSV and distribute private payments to your
+                      entire team in one batch flow. Each recipient receives
+                      funds in a stealth UTXO unique to them — no on-chain link
+                      between sender and receiver.
                     </p>
                   </div>
                   <div className="flex-1 bg-surface-container-lowest rounded-lg p-6 w-full border border-outline-variant/10">

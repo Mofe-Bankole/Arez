@@ -20,7 +20,7 @@ export async function handleUmbraRegistration({ umbraClient }: Props) {
       anonymous: true,
     });
 
-    console.log("✅ UMBRA REGISTRATION COMPLETE");
+    // console.log("✅ UMBRA REGISTRATION COMPLETE");
     return { success: true };
   } catch (err: any) {
     // "already registered" is not a real error — swallow it
@@ -28,7 +28,7 @@ export async function handleUmbraRegistration({ umbraClient }: Props) {
       err?.message?.toLowerCase().includes("already registered") ||
       err?.message?.toLowerCase().includes("account already exists")
     ) {
-      console.log("ℹ️ Already registered with Umbra");
+      // console.log("ℹ️ Already registered with Umbra");
       return { success: true, alreadyRegistered: true };
     }
     console.error("Umbra registration failed:", err);

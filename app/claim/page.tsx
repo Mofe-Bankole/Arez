@@ -28,7 +28,7 @@ export default function ClaimPage() {
     if (!umbraClient) return;
     const client = umbraClient;
     // scan all trees aggressively
-    for (let tree = 0; tree <= 5; tree++) {
+    for (let tree = 0; tree <= 20; tree++) {
       try {
         const fetchUtxos = getClaimableUtxoScannerFunction({ client });
         const { received } = await fetchUtxos(
@@ -37,7 +37,10 @@ export default function ClaimPage() {
         );
         console.log(`Tree ${tree}: ${received.length} UTXOs`);
         if (received.length > 0) {
-          console.log(`Tree ${tree} UTXOs:`, JSON.stringify(received, null, 2));
+          console.log(
+            `Tree ${tree} UTXOs : `,
+            JSON.stringify(received, null, 2),
+          );
         }
       } catch (err) {
         console.log(`Tree ${tree}: error -`, err);
@@ -104,16 +107,9 @@ export default function ClaimPage() {
                 No claimable UTXOs found for this wallet.
               </p>
             )}
-            {error && (
-              <p className="text-sm text-red-400 pt-2">{error} big bug</p>
-            )}
+            {error && <p className="text-sm text-red-400 pt-2">{error}</p>}
           </div>
-          <button
-            onClick={handleDebug}
-            className="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg text-xs font-bold"
-          >
-            Debug Scan All Trees
-          </button>
+
           <button
             onClick={handleScanAndClaim}
             disabled={!ready || scanning}

@@ -5,6 +5,6 @@ import { clearInterval } from "timers";
 export async function deriveMasterViewingKey(client: IUmbraClient) {
   const deriver = await getMasterViewingKeyDeriver({client});
   const key = await deriver();
-  console.log(key);
+  // console.log(key);
   return key;
 }

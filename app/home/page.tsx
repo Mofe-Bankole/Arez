@@ -153,10 +153,10 @@ export default function Dashboard() {
               </label>
               <div className="mt-4">
                 <h3 className="text-2xl font-black tracking-tight text-[#e5e2e1] font-mono tabular-nums">
-                  142
+                  --
                 </h3>
                 <p className="text-on-surface-variant text-[10px] mt-1">
-                  across 12 departments
+                  Data not available
                 </p>
               </div>
             </div>
@@ -167,10 +167,10 @@ export default function Dashboard() {
               </label>
               <div className="mt-4">
                 <h3 className="text-2xl font-black tracking-tight text-[#e5e2e1] font-mono tabular-nums">
-                  3,892
+                  --
                 </h3>
                 <p className="text-on-surface-variant text-[10px] mt-1">
-                  all-time encrypted
+                  Data not available
                 </p>
               </div>
             </div>
@@ -203,7 +203,6 @@ export default function Dashboard() {
             </div>
           </section>
           {/* Recent Activity Feed */}
-        
         </div>
         {/* Privacy Pulse Indicator */}
         <div className="fixed bottom-8 right-8 pointer-events-none">
