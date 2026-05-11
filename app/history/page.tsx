@@ -11,7 +11,7 @@ import { config } from "@/lib/config";
 import BoardHeader from "@/components/BoardHeader";
 
 // Using Helius API for transaction history
-const HeliusApiKey = "46ed1c34-5f2d-4741-b8b8-ff511d6b227e";
+const HeliusApiKey = process.env.NEXT_PUBLIC_HELIUS_API_KEY;
 const HeliusBaseUrl = "https://api-devnet.helius-rpc.com/v0/addresses";
 
 type TxRow = {
