@@ -12,18 +12,17 @@ import {
 } from "@umbra-privacy/sdk/interfaces";
 import {
   getClaimReceiverClaimableUtxoIntoEncryptedBalanceProver,
-  getClaimSelfClaimableUtxoIntoPublicBalanceProver,
 } from "@umbra-privacy/web-zk-prover";
 import { createU32 } from "@umbra-privacy/sdk/utils";
 
 export async function scanAndClaimUtxos(client: IUmbraClient) {
   const fetchUtxos = getClaimableUtxoScannerFunction({ client });
 
-  const { received } = await fetchUtxos(
-    createU32(BigInt(100000)),
+  const { received, publicReceived } = await fetchUtxos(
+    createU32(BigInt(0)),
     createU32(BigInt(0)),
   );
-  console.log(received);
+
   console.log("Found claimable UTXOs:", received.length);
   if (received.length === 0) return { claimed: 0, results: [] };
 
@@ -43,9 +42,13 @@ export async function scanAndClaimUtxos(client: IUmbraClient) {
         client.fetchBatchMerkleProof as BatchMerkleProofFetcherFunction,
     },
   );
-
+  const all = [...received, ...publicReceived];
+  console.log(all);
+  if (all.length === 0) return { claimed: 0, results: [] };
+  const out = await claim(all);
+  console.log(out);
   const results = [];
-  for (const utxo of received) {
+  for (const utxo of all) {
     try {
       const result = await claim([utxo]);
       console.log("Claim result : ", result);

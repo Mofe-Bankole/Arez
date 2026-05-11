@@ -114,7 +114,7 @@ export default function HistoryPage() {
     try {
       if (!publicKey) return;
       const address = publicKey.toString();
-      const url = `${HeliusBaseUrl}/${address}/transactions?api-key=${HeliusApiKey}&limit=15`;
+      const url = `${HeliusBaseUrl}/${address}/transactions?api-key=${HeliusApiKey}`;
       const resp = await fetch(url);
       const data = await resp.json(); // expects array of transaction objects
       if (!Array.isArray(data) || data.length === 0) {
