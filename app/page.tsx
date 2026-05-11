@@ -96,13 +96,18 @@ export default function Home() {
               through zero-knowledge proofs.
             </p>
             <div className="flex flex-wrap gap-4 pt-10 justify-center">
-              <button className="px-10 flex flex-row align-center py-4 glow-button text-on-primary-container font-black text-sm uppercase tracking-[0.2em] rounded-md hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_0_1px_rgba(0,245,255,0.15)]">
+              <button
+                onClick={() => router.push("/home")}
+                className="px-10 flex flex-row align-center py-4 glow-button text-on-primary-container font-black text-sm uppercase tracking-[0.2em] rounded-md hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_0_1px_rgba(0,245,255,0.15)]"
+              >
                 Shield &amp; Send
-                {/*<ArrowRight />*/}
               </button>
-              <button className="px-10 py-4 bg-transparent border border-outline-variant text-primary font-black text-sm uppercase tracking-[0.2em] rounded-md hover:bg-surface-container-high transition-all">
+              <a
+                href=""
+                className="px-10 py-4 bg-transparent border border-outline-variant text-primary font-black text-sm uppercase tracking-[0.2em] rounded-md hover:bg-surface-container-high transition-all"
+              >
                 Watch Demo
-              </button>
+              </a>
             </div>
             {/* <!-- Trust Signals --> */}
             <div className="pt-16 w-full">

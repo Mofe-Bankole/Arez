@@ -14,7 +14,6 @@ export async function handleUmbraRegistration({ umbraClient }: Props) {
       { zkProver: prover },
     );
 
-    // register() is idempotent — safe to call even if already registered
     await register({
       confidential: true, // hide balance
       anonymous: true,
@@ -23,7 +22,6 @@ export async function handleUmbraRegistration({ umbraClient }: Props) {
     console.log("✅ UMBRA REGISTRATION COMPLETE");
     return { success: true };
   } catch (err: any) {
-    // "already registered" is not a real error — swallow it
     if (
       err?.message?.toLowerCase().includes("already registered") ||
       err?.message?.toLowerCase().includes("account already exists")

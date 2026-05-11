@@ -11,8 +11,8 @@ import BoardHeader from "@/components/BoardHeader";
 import TransactionModal from "@/components/TransactionModal";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { ArezkProver } from "@/lib/provers";
-import { useUmbraClient } from "@/hooks/useUmbraClient";
 import { IUmbraClient } from "@umbra-privacy/sdk/interfaces";
+import { useUmbra } from "@/context/UmbraContext";
 
 const SOL_MINT = "So11111111111111111111111111111111111111112";
 const USDC_MINT = "4oG4sjmopf5MzvTHLE8rpVJ2uyczxfsw2K84SUTpNDx7"; // dUSDC devnet
@@ -21,7 +21,7 @@ const USDT_MINT = "DXQwBNGgyQ2BzGWxEriJPVmXYFQBsQbXvfvfSNTaJkL6"; // dUSDT devde
 
 export default function SendPage() {
   const { publicKey } = useWallet();
-  const { umbraClient, initializeClient, ready, loading } = useUmbraClient();
+  const { umbraClient, initializeClient, ready, loading } = useUmbra();
   const [recipient, setRecipient] = React.useState("");
   const [amount, setAmount] = React.useState<number>(0);
   const [currency, setCurrency] = React.useState<"USDC" | "USDT" | "SOL">(

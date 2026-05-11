@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { useUmbraClient } from "@/hooks/useUmbraClient";
 import { ArezPrivateTransferPayload, SendPrivatePayment } from "@/lib/payments";
 import { ArezkProver } from "@/lib/provers";
 import { IUmbraClient } from "@umbra-privacy/sdk/interfaces";
@@ -17,6 +16,7 @@ import {
 } from "lucide-react";
 import BoardHeader from "@/components/BoardHeader";
 import { PublicKey } from "@solana/web3.js";
+import { useUmbra } from "@/context/UmbraContext";
 
 const SOL_MINT = "So11111111111111111111111111111111111111112";
 
@@ -84,7 +84,7 @@ export default function PayrollPage() {
   const [isExecuting, setIsExecuting] = React.useState(false);
   const [isDone, setIsDone] = React.useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const { umbraClient, initializeClient, ready } = useUmbraClient();
+  const { umbraClient, initializeClient, ready } = useUmbra();
 
   // — CSV handling —
   const handleFile = (file: File) => {

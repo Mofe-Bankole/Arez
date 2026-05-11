@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { SolanaWalletProvider } from "@/providers/WalletProvider";
+import { UmbraProvider } from "../context/UmbraContext";
 
 export const metadata: Metadata = {
   title: "Arez",
@@ -20,7 +21,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
-        <SolanaWalletProvider>{children}</SolanaWalletProvider>
+        <SolanaWalletProvider>
+          <UmbraProvider>{children}</UmbraProvider>
+        </SolanaWalletProvider>
       </body>
     </html>
   );

@@ -29,6 +29,10 @@ function shortenAddress(addr: string) {
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 }
 
+// Token mint addresses for devnet USDC and USDT
+const USDC_MINT = "4oG4sjmopf5MzvTHLE8rpVJ2uyczxfsw2K84SUTpNDx7";
+const USDT_MINT = "DXQwBNGgyQ2BzGWxEriJPVmXYFQBsQbXvfvfSNTaJkL6";
+
 // Helper to parse Helius transaction format into TxRow
 async function parseHeliusTx(tx: any, walletAddress: string): Promise<TxRow> {
   // Helius returns similar fields as in example
@@ -65,9 +69,16 @@ async function parseHeliusTx(tx: any, walletAddress: string): Promise<TxRow> {
   // Fallback to token transfers if present
   if (type === "Unknown" && tx.tokenTransfers && tx.tokenTransfers.length > 0) {
     const tt = tx.tokenTransfers[0];
-    const diff = tt.amount; // assume already in token units
+    const diff = tt.amount; // raw amount, may need decimals handling
     amount = Math.abs(diff).toString();
-    token = tt.tokenSymbol ?? "SPL";
+    // Determine token name based on mint address if available
+    if (tt.mint === USDC_MINT) {
+      token = "USDC";
+    } else if (tt.mint === USDT_MINT) {
+      token = "USDT";
+    } else {
+      token = tt.tokenSymbol ?? "SPL";
+    }
     if (tt.fromUserAccount === walletAddress) {
       type = "Sent";
       counterparty = tt.toUserAccount;

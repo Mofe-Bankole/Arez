@@ -1,7 +1,6 @@
 // app/claim/page.tsx
 "use client";
 import React, { useEffect } from "react";
-import { useUmbraClient } from "@/hooks/useUmbraClient";
 import { scanAndClaimUtxos } from "@/lib/claim";
 import { useWallet } from "@solana/wallet-adapter-react";
 import SideBar from "@/components/Sidebar";
@@ -9,10 +8,11 @@ import BoardHeader from "@/components/BoardHeader";
 import { Loader2, CheckCircle2, ShieldCheck } from "lucide-react";
 import { createU32 } from "@umbra-privacy/sdk/utils";
 import { getClaimableUtxoScannerFunction } from "@umbra-privacy/sdk";
+import { useUmbra } from "@/context/UmbraContext";
 
 export default function ClaimPage() {
   const { publicKey } = useWallet();
-  const { umbraClient, initializeClient, ready, loading } = useUmbraClient();
+  const { umbraClient, initializeClient, ready, loading } = useUmbra();
   const [scanning, setScanning] = React.useState(false);
   const [result, setResult] = React.useState<{
     claimed: number;

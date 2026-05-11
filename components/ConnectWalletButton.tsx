@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { useUmbraClient } from "@/hooks/useUmbraClient";
+// import { useUmbra } from "@/context/UmbraContext";
 import { handleUmbraRegistration } from "@/lib/umbraRegister";
+import { useUmbra } from "@/context/UmbraContext";
 
 export default function WalletConnectButton() {
   const {
@@ -20,7 +21,7 @@ export default function WalletConnectButton() {
     ready,
     initializeClient,
     resetClient,
-  } = useUmbraClient();
+  } = useUmbra();
   const [copied, setCopied] = useState(false);
   const [hasRegistered, setHasRegistered] = useState(false);
 
