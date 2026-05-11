@@ -15,6 +15,7 @@ import { useUmbraClient } from "@/hooks/useUmbraClient";
 import { IUmbraClient } from "@umbra-privacy/sdk/interfaces";
 
 const SOL_MINT = "So11111111111111111111111111111111111111112";
+// devnet USDC/USDT mints for dUSDC and dUSDT
 
 export default function SendPage() {
   const { publicKey } = useWallet();

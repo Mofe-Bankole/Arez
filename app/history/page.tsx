@@ -5,16 +5,14 @@ import "../globals.css";
 import { Download, Filter, Search } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useEffect, useState, useRef, useMemo } from "react";
-import {
-  Connection,
-  ConfirmedSignatureInfo,
-  ParsedTransactionWithMeta,
-  PublicKey,
-} from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
+import type { ConfirmedSignatureInfo } from "@solana/web3.js";
 import { config } from "@/lib/config";
 import BoardHeader from "@/components/BoardHeader";
 
-const connection = new Connection(config.devnet_rpc, "confirmed");
+// Using Helius API for transaction history
+const HeliusApiKey = "46ed1c34-5f2d-4741-b8b8-ff511d6b227e";
+const HeliusBaseUrl = "https://api-devnet.helius-rpc.com/v0/addresses";
 
 type TxRow = {
   signature: string;
@@ -31,91 +29,68 @@ function shortenAddress(addr: string) {
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 }
 
-async function parseTx(
-  tx: ParsedTransactionWithMeta,
-  sig: ConfirmedSignatureInfo,
-  walletAddress: string,
-): Promise<TxRow> {
-  const date = new Date((tx.blockTime ?? 0) * 1000);
-  const dateStr = date.toLocaleDateString("en-US", {
+// Helper to parse Helius transaction format into TxRow
+async function parseHeliusTx(tx: any, walletAddress: string): Promise<TxRow> {
+  // Helius returns similar fields as in example
+  const signature = tx.signature;
+  const timestamp = tx.timestamp ?? tx.blockTime ?? 0;
+  const dateObj = new Date(timestamp * 1000);
+  const dateStr = dateObj.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
   });
-  const timeStr = date.toISOString().split("T")[1].split(".")[0] + " UTC";
+  const timeStr = dateObj.toISOString().split("T")[1].split(".")[0] + " UTC";
 
+  // Determine native transfer amount if present
   let type: TxRow["type"] = "Unknown";
   let counterparty = "Unknown";
   let amount = "—";
   let token = "SOL";
 
-  try {
-    const accountKeys = tx.transaction.message.accountKeys.map(
-      (k: any) => k.pubkey?.toString() ?? k.toString(),
-    );
-    const preBalances = tx.meta?.preBalances ?? [];
-    const postBalances = tx.meta?.postBalances ?? [];
-    const walletIdx = accountKeys.indexOf(walletAddress);
-
-    if (walletIdx !== -1) {
-      const diff = (postBalances[walletIdx] - preBalances[walletIdx]) / 1e9;
-      if (Math.abs(diff) > 0.000001) {
-        amount = Math.abs(diff).toFixed(4);
-        token = "SOL";
-        type = diff > 0 ? "Received" : "Sent";
-        const otherIdx = accountKeys.findIndex(
-          (k: string, i: number) =>
-            i !== walletIdx &&
-            Math.abs((postBalances[i] - preBalances[i]) / 1e9) > 0.000001,
-        );
-        counterparty =
-          otherIdx !== -1 ? shortenAddress(accountKeys[otherIdx]) : "Unknown";
-      }
+  if (tx.nativeTransfers && tx.nativeTransfers.length > 0) {
+    const nt = tx.nativeTransfers[0];
+    const diff = nt.amount / 1e9; // lamports to SOL
+    amount = Math.abs(diff).toFixed(4);
+    token = "SOL";
+    if (nt.fromUserAccount === walletAddress) {
+      type = "Sent";
+      counterparty = nt.toUserAccount;
+    } else if (nt.toUserAccount === walletAddress) {
+      type = "Received";
+      counterparty = nt.fromUserAccount;
     }
+  }
 
-    const tokenBalances = tx.meta?.postTokenBalances ?? [];
-    const preTokenBalances = tx.meta?.preTokenBalances ?? [];
-
-    if (tokenBalances.length > 0) {
-      for (const post of tokenBalances) {
-        const pre = preTokenBalances.find(
-          (p) => p.accountIndex === post.accountIndex,
-        );
-        const postAmt = parseFloat(post.uiTokenAmount.uiAmountString ?? "0");
-        const preAmt = parseFloat(pre?.uiTokenAmount.uiAmountString ?? "0");
-        const diff = postAmt - preAmt;
-
-        if (Math.abs(diff) > 0) {
-          const owner = post.owner ?? accountKeys[post.accountIndex];
-          amount = Math.abs(diff).toFixed(2);
-          token = post.uiTokenAmount.decimals === 6 ? "USDC" : "SPL";
-          type =
-            owner === walletAddress
-              ? diff > 0
-                ? "Received"
-                : "Sent"
-              : "Unknown";
-          const otherOwner = tokenBalances.find(
-            (t) => t.owner !== owner,
-          )?.owner;
-          counterparty = otherOwner
-            ? shortenAddress(otherOwner)
-            : shortenAddress(accountKeys[1]);
-          break;
-        }
-      }
+  // Fallback to token transfers if present
+  if (type === "Unknown" && tx.tokenTransfers && tx.tokenTransfers.length > 0) {
+    const tt = tx.tokenTransfers[0];
+    const diff = tt.amount; // assume already in token units
+    amount = Math.abs(diff).toString();
+    token = tt.tokenSymbol ?? "SPL";
+    if (tt.fromUserAccount === walletAddress) {
+      type = "Sent";
+      counterparty = tt.toUserAccount;
+    } else if (tt.toUserAccount === walletAddress) {
+      type = "Received";
+      counterparty = tt.fromUserAccount;
     }
-  } catch (_) {}
+  }
+
+  // Shorten counterparty address for display consistency
+  if (counterparty !== "Unknown") {
+    counterparty = `${counterparty.slice(0, 6)}...${counterparty.slice(-4)}`;
+  }
 
   return {
-    signature: sig.signature,
+    signature,
     date: dateStr,
     time: timeStr,
     type,
     counterparty,
     amount,
     token,
-    status: sig.err ? "failed" : "confirmed",
+    status: "confirmed",
   };
 }
 
@@ -127,30 +102,19 @@ export default function HistoryPage() {
   const [hasFetched, setHasFetched] = useState(false);
   const fetchTxs = async () => {
     try {
-      const sigs = await connection.getSignaturesForAddress(
-        publicKey as PublicKey,
-        {
-          limit: 5,
-        },
-      );
-
-      if (sigs.length === 0) {
+      if (!publicKey) return;
+      const address = publicKey.toString();
+      const url = `${HeliusBaseUrl}/${address}/transactions?api-key=${HeliusApiKey}&limit=15`;
+      const resp = await fetch(url);
+      const data = await resp.json(); // expects array of transaction objects
+      if (!Array.isArray(data) || data.length === 0) {
         setTxRows([]);
         return;
       }
-
-      // ✅ fetch in one batch, not individually
-      const parsed = await connection.getParsedTransactions(
-        sigs.map((s) => s.signature),
-        { maxSupportedTransactionVersion: 0 },
-      );
-
       const rows: TxRow[] = [];
-      for (let i = 0; i < sigs.length; i++) {
-        const tx = parsed[i];
-        if (!tx) continue;
-        if (!publicKey) return;
-        const row = await parseTx(tx, sigs[i], publicKey.toString());
+      for (const tx of data) {
+        // Map helius transaction to TxRow format using similar logic
+        const row = await parseHeliusTx(tx, address);
         rows.push(row);
       }
       setTxRows(rows);
@@ -286,7 +250,7 @@ export default function HistoryPage() {
               <div className="py-16 text-center bg-surface-container-low">
                 <button
                   onClick={handleRefresh}
-                  className="px-6 py-3 bg-primary text-on-primary-container rounded-xl font-black text-xs uppercase tracking-widest"
+                  className="px-6 py-4 bg-primary text-on-primary-container rounded-xl font-black text-xs uppercase tracking-widest"
                 >
                   Load Transactions
                 </button>
@@ -301,7 +265,7 @@ export default function HistoryPage() {
                 }`}
                 onClick={() =>
                   window.open(
-                    `https://explorer.solana.com/tx/${tx.signature}?cluster=devnet`,
+                    `https://solscan.io/tx/${tx.signature}?cluster=devnet`,
                     "_blank",
                   )
                 }

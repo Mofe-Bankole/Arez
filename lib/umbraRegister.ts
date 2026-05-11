@@ -20,7 +20,7 @@ export async function handleUmbraRegistration({ umbraClient }: Props) {
       anonymous: true,
     });
 
-    // console.log("✅ UMBRA REGISTRATION COMPLETE");
+    console.log("✅ UMBRA REGISTRATION COMPLETE");
     return { success: true };
   } catch (err: any) {
     // "already registered" is not a real error — swallow it

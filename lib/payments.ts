@@ -213,8 +213,6 @@ export const SendPublicPayment = (payload: PaymentRequest) => {
 export async function SendPrivatePayment(payload: ArezPrivateTransferPayload) {
   // Force USDC devnet/mainnet mint (the only supported token for this demo).
   // Users cannot send native SOL privately – they must use USDC.
-  const USDC_MINT = "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU";
-  // payload.mint = USDC_MINT;
 
   // Persist the mint so the Claim page knows which token to scan.
   if (typeof window !== "undefined") {
@@ -229,7 +227,7 @@ export async function SendPrivatePayment(payload: ArezPrivateTransferPayload) {
     { zkProver: payload.zkProver },
   );
   const RECIPIENT = payload.recipient;
-  const MINT = USDC_MINT;
+  const MINT = payload.mint;
   const AMOUNT = payload.amount;
 
   try {

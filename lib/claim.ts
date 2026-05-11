@@ -6,7 +6,10 @@ import {
   isClaimUtxoError,
   // getBatchMerkleProofFetcher,
 } from "@umbra-privacy/sdk";
-import { IUmbraClient } from "@umbra-privacy/sdk/interfaces";
+import {
+  BatchMerkleProofFetcherFunction,
+  IUmbraClient,
+} from "@umbra-privacy/sdk/interfaces";
 import {
   getClaimReceiverClaimableUtxoIntoEncryptedBalanceProver,
   getClaimSelfClaimableUtxoIntoPublicBalanceProver,
@@ -30,9 +33,15 @@ export async function scanAndClaimUtxos(client: IUmbraClient) {
     apiEndpoint: "https://relayer.api-devnet.umbraprivacy.com",
   });
 
+  if (!client) return { claimed: 0, results: [] };
   const claim = getReceiverClaimableUtxoToEncryptedBalanceClaimerFunction(
     { client },
-    { zkProver: claimProver, relayer },
+    {
+      zkProver: claimProver,
+      relayer: relayer,
+      fetchBatchMerkleProof:
+        client.fetchBatchMerkleProof as BatchMerkleProofFetcherFunction,
+    },
   );
 
   const results = [];
