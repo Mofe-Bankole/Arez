@@ -15,6 +15,8 @@ import { useUmbraClient } from "@/hooks/useUmbraClient";
 import { IUmbraClient } from "@umbra-privacy/sdk/interfaces";
 
 const SOL_MINT = "So11111111111111111111111111111111111111112";
+const USDC_MINT = "4oG4sjmopf5MzvTHLE8rpVJ2uyczxfsw2K84SUTpNDx7"; // dUSDC devnet
+const USDT_MINT = "DXQwBNGgyQ2BzGWxEriJPVmXYFQBsQbXvfvfSNTaJkL6"; // dUSDT devdev
 // devnet USDC/USDT mints for dUSDC and dUSDT
 
 export default function SendPage() {
@@ -22,7 +24,9 @@ export default function SendPage() {
   const { umbraClient, initializeClient, ready, loading } = useUmbraClient();
   const [recipient, setRecipient] = React.useState("");
   const [amount, setAmount] = React.useState<number>(0);
-  const [currency, setCurrency] = React.useState<"USDC" | "SOL">("SOL");
+  const [currency, setCurrency] = React.useState<"USDC" | "USDT" | "SOL">(
+    "SOL",
+  );
   const [memo, setMemo] = React.useState("");
   const [shield, setShield] = React.useState(true);
   const [attachViewingKey, setAttachViewingKey] = React.useState(false);
@@ -77,7 +81,12 @@ export default function SendPage() {
           client: umbraClient as IUmbraClient,
           zkProver: ArezkProver,
           recipient,
-          mint: SOL_MINT,
+          mint:
+            currency === "SOL"
+              ? SOL_MINT
+              : currency === "USDC"
+                ? USDC_MINT
+                : USDT_MINT,
           amount,
           mode: "private",
           chain: "solana",
@@ -220,10 +229,14 @@ export default function SendPage() {
                   <div className="relative">
                     <select
                       value={currency}
-                      onChange={(e) => setCurrency(e.target.value as "SOL")}
+                      onChange={(e) =>
+                        setCurrency(e.target.value as "SOL" | "USDC" | "USDT")
+                      }
                       className="w-full bg-surface-container-highest border border-outline-variant/25 rounded-xl py-4 pl-4 pr-11 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container/35 focus:border-primary-container/40 transition-all font-body text-sm appearance-none cursor-pointer"
                     >
                       <option value="SOL">SOL (SPL-Token)</option>
+                      <option value="USDC">USDC (dUSDC)</option>
+                      <option value="USDT">USDT (dUSDT)</option>
                     </select>
                     <ChevronDown
                       className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-outline-variant"
