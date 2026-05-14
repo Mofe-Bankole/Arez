@@ -1,8 +1,8 @@
 "use client";
 
 import "../globals.css";
-import SideBar from "@/components/Sidebar";
-import WalletConnectButton from "@/components/ConnectWalletButton";
+import SideBar from "@/components/ui/Sidebar";
+import WalletConnectButton from "@/components/ui/ConnectWalletButton";
 import { useBalances } from "@/hooks/useBalances";
 // import useArezWallet from "@/hooks/useWallet";
 import {
@@ -16,7 +16,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
-import BoardHeader from "@/components/BoardHeader";
+import BoardHeader from "@/components/ui/BoardHeader";
 
 export default function Dashboard() {
   const { connected, publicKey } = useWallet();

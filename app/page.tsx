@@ -1,5 +1,11 @@
 "use client";
-import WalletConnectButton from "@/components/ConnectWalletButton";
+
+/* ==== Feature Flags ==== */
+const ENABLE_AI_SUMMARY = "true";
+const ENABLE_BATCH_QR = "true";
+const ENABLE_HISTORY_REPORT = "true";
+const ENABLE_DUNE = "true";
+import WalletConnectButton from "@/components/ui/ConnectWalletButton";
 import { config } from "@/lib/config";
 import { useWallet } from "@solana/wallet-adapter-react";
 import {
@@ -255,6 +261,145 @@ export default function Home() {
                   sub-cent fees.
                 </p>
               </div>
+              {/* <!-- Feature 5 — AI Summary --> */}
+              {ENABLE_AI_SUMMARY && (
+                <div className="bg-surface-container p-10 rounded-xl space-y-6 flex flex-col justify-between relative overflow-hidden group">
+                  <div className="absolute -top-10 -left-10 w-48 h-48 bg-tertiary-fixed-dim/5 rounded-full blur-3xl group-hover:bg-tertiary-fixed-dim/10 transition-all duration-700" />
+                  <div className="relative z-10 space-y-6">
+                    <div className="w-10 h-10 rounded-lg bg-tertiary-fixed-dim/10 flex items-center justify-center">
+                      <Zap
+                        className="h-5 w-5 text-tertiary-fixed-dim"
+                        aria-hidden="true"
+                      />
+                    </div>
+                    <h3 className="text-3xl font-black uppercase tracking-tight">
+                      AI Transaction Summaries
+                    </h3>
+                    <p className="text-on-surface-variant leading-relaxed">
+                      Every transaction explained in plain English. Arez calls a
+                      Llama‑3 model to generate a one-sentence description of
+                      each payment — perfect for records, reports, and audit
+                      trails.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="relative z-10 mt-2 w-full py-4 border border-tertiary-fixed-dim/30 text-tertiary-fixed-dim text-[10px] font-black uppercase tracking-[0.2em] rounded-lg hover:bg-tertiary-fixed-dim/10 transition-all flex items-center justify-center gap-2"
+                  >
+                    <Zap className="h-4 w-4" />
+                    Generate Summary
+                  </button>
+                </div>
+              )}
+
+              {/* <!-- Feature 6 — Batch QR --> */}
+              {ENABLE_BATCH_QR && (
+                <div className="md:col-span-2 bg-surface-container-high p-10 rounded-xl relative overflow-hidden group">
+                  <div className="absolute -bottom-16 -right-16 w-64 h-64 bg-primary-container/5 rounded-full blur-3xl group-hover:bg-primary-container/10 transition-all duration-700" />
+                  <div className="relative z-10 flex flex-col md:flex-row gap-10 items-start">
+                    <div className="flex-1 space-y-6">
+                      <div className="w-10 h-10 rounded-lg bg-primary-container/10 flex items-center justify-center">
+                        <Share2
+                          className="h-5 w-5 text-primary-container"
+                          aria-hidden="true"
+                        />
+                      </div>
+                      <h3 className="text-3xl font-black uppercase tracking-tight">
+                        Batch QR Payroll
+                      </h3>
+                      <p className="text-on-surface-variant leading-relaxed">
+                        Upload a CSV, generate a single QR code. Employees scan
+                        it to claim their stealth payment — no wallet address
+                        sharing, no coordination overhead. One code. Private for
+                        every recipient.
+                      </p>
+                      <button
+                        type="button"
+                        className="py-4 px-8 border border-primary-container/30 text-primary-container text-[10px] font-black uppercase tracking-[0.2em] rounded-lg hover:bg-primary-container/10 transition-all flex items-center gap-2"
+                      >
+                        <Share2 className="h-4 w-4" />
+                        Generate Payroll QR
+                      </button>
+                    </div>
+                    {/* QR placeholder visual */}
+                    <div className="flex-shrink-0 w-32 h-32 bg-surface-container-lowest rounded-xl border border-outline-variant/20 flex items-center justify-center">
+                      <div className="grid grid-cols-3 gap-1 p-3 opacity-30">
+                        {Array.from({ length: 9 }).map((_, i) => (
+                          <div
+                            key={i}
+                            className={`w-full aspect-square rounded-sm ${
+                              [0, 2, 6, 8, 4].includes(i)
+                                ? "bg-primary-container"
+                                : "bg-outline-variant"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* <!-- Feature 7 — Weekly Report --> */}
+              {ENABLE_HISTORY_REPORT && (
+                <div className="bg-surface-container-low p-px rounded-xl bg-gradient-to-br from-primary-container/20 to-transparent">
+                  <div className="bg-surface-container-low h-full w-full rounded-xl p-10 space-y-6 flex flex-col justify-between">
+                    <div className="space-y-6">
+                      <div className="w-10 h-10 rounded-lg bg-primary-container/10 flex items-center justify-center">
+                        <BadgeCheck
+                          className="h-5 w-5 text-primary-container"
+                          aria-hidden="true"
+                        />
+                      </div>
+                      <h3 className="text-3xl font-black uppercase tracking-tight">
+                        Weekly Transaction Report
+                      </h3>
+                      <p className="text-on-surface-variant leading-relaxed">
+                        Get an AI-summarized digest of your week's activity —
+                        total volume, recipient count, and anomalies — generated
+                        privately and copied to your clipboard.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      className="mt-2 w-full py-4 bg-primary-container/10 border border-primary-container/20 text-primary-container text-[10px] font-black uppercase tracking-[0.2em] rounded-lg hover:bg-primary-container/20 transition-all flex items-center justify-center gap-2"
+                    >
+                      <ArrowRight className="h-4 w-4" />
+                      Generate Weekly Report
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* <!-- Feature 8 — Dune Analytics --> */}
+              {ENABLE_DUNE && (
+                <div className="md:col-span-2 bg-surface-container p-10 rounded-xl space-y-6 relative overflow-hidden">
+                  <div className="space-y-4">
+                    <div className="w-10 h-10 rounded-lg bg-tertiary-fixed-dim/10 flex items-center justify-center">
+                      <GitBranch
+                        className="h-5 w-5 text-tertiary-fixed-dim"
+                        aria-hidden="true"
+                      />
+                    </div>
+                    <h3 className="text-3xl font-black uppercase tracking-tight">
+                      On‑Chain Analytics
+                    </h3>
+                    <p className="text-on-surface-variant leading-relaxed">
+                      Live Dune Analytics dashboard tracking Arez stealth pool
+                      volume, unique senders, and transaction frequency — all
+                      without de-anonymizing individual users.
+                    </p>
+                  </div>
+                  <div className="w-full rounded-xl overflow-hidden border border-outline-variant/10 bg-surface-container-lowest">
+                    <iframe
+                      src="https://dune.com/embeds/YOUR_DUNE_EMBED_ID/YOUR_VISUALIZATION_ID"
+                      className="w-full h-64"
+                      frameBorder="0"
+                      title="Arez On-Chain Analytics"
+                    />
+                  </div>
+                </div>
+              )}
               {/* <!-- Feature 4 --> */}
               <div className="md:col-span-2 bg-surface-container-low p-1 p-px rounded-xl bg-gradient-to-r from-outline-variant/30 to-transparent">
                 <div className="bg-surface-container-low h-full w-full rounded-xl p-10 flex flex-col md:flex-row gap-10 items-center">
@@ -308,76 +453,6 @@ export default function Home() {
           </div>
         </section>
         {/* <!-- Compliance Section --> */}
-        <section className="py-32 px-6">
-          <div className="container mx-auto flex flex-col lg:flex-row gap-20 items-center">
-            <div className="lg:w-1/2 space-y-8">
-              <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-tight">
-                Privacy without <br />
-                <span className="text-outline">Anarchy.</span>
-              </h2>
-              <p className="text-xl text-on-surface-variant leading-relaxed">
-                Arez is built for the professional world. Our ZK-compliance
-                framework allows you to prove tax obligations and salary
-                distributions without revealing individual worker data to the
-                world.
-              </p>
-              <ul className="space-y-4">
-                <li className="flex items-start gap-4">
-                  <CheckCircle2
-                    className="h-5 w-5 text-primary-container mt-0.5"
-                    aria-hidden="true"
-                  />
-                  <span className="text-on-surface">
-                    Zero-Knowledge proof of tax withholdings
-                  </span>
-                </li>
-                <li className="flex items-start gap-4">
-                  <CheckCircle2
-                    className="h-5 w-5 text-primary-container mt-0.5"
-                    aria-hidden="true"
-                  />
-                  <span className="text-on-surface">
-                    Automated W-8/W-9 collection in encrypted vaults
-                  </span>
-                </li>
-                <li className="flex items-start gap-4">
-                  <CheckCircle2
-                    className="h-5 w-5 text-primary-container mt-0.5"
-                    aria-hidden="true"
-                  />
-                  <span className="text-on-surface">
-                    Auditor-only portal with hardware key access
-                  </span>
-                </li>
-              </ul>
-            </div>
-            <div className="lg:w-1/2 relative">
-              <div className="absolute inset-0 bg-primary-container/20 blur-[100px] rounded-full"></div>
-              <div className="relative glass-panel bg-surface-container-high/40 rounded-2xl p-8 border border-primary-container/10">
-                <img
-                  alt=""
-                  className="rounded-xl object-cover w-full aspect-video grayscale opacity-80 mix-blend-screen"
-                  data-alt="high-tech secure server room with glowing green and blue status lights and architectural server racks in a dark environment"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7sEbgKU09g-nPYzdn4beXG6PUUaGS7l8Nn3xOhrHAuJfn_37KJDPtLql9lds3ipXmA0Ba-dj5kUUlWm9lRR4SORhVAa57_zhSCEikbFdEbVC3PPpwIddCjAMn9l3bGP1XBc8ooAqto8lHCH9PyB9_oNFqANSd-Izeunbn6n5hx1KqBkJMujAUt_21LUeON_32z4Zn-yeFrhB_447FgAtSZ6BwrobxwskEp0RBddGozJrBv0O8W2urylovxSOAWLS5-tiUJ3alqHs"
-                />
-                <div className="mt-8 flex items-center justify-between">
-                  <div>
-                    <div className="text-[10px] font-bold text-outline uppercase tracking-widest">
-                      Encryption Standard
-                    </div>
-                    <div className="text-lg font-bold text-primary">
-                      AES-256-GCM + ZK-SNARKs
-                    </div>
-                  </div>
-                  <BadgeCheck
-                    className="h-10 w-10 text-primary-container"
-                    aria-hidden="true"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
         {/* <!-- CTA Section --> */}
         <section className="relative py-24 md:py-32 px-6 overflow-hidden bg-primary-container/5 border-y border-outline-variant/10">
           <div
@@ -402,7 +477,7 @@ export default function Home() {
                 onClick={() => router.push("/home")}
                 className="w-full px-10 py-5 bg-surface-container-highest text-primary font-black text-base uppercase tracking-[0.2em] rounded-md border border-outline-variant transition-all hover:bg-surface-container sm:w-auto sm:min-w-[240px]"
               >
-                Visit Dashboard
+                Shield & SEND
               </button>
             </div>
           </div>

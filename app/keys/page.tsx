@@ -1,5 +1,5 @@
-import WalletConnectButton from "@/components/ConnectWalletButton";
-import Sidebar from "@/components/Sidebar";
+import WalletConnectButton from "@/components/ui/ConnectWalletButton";
+import Sidebar from "@/components/ui/Sidebar";
 import {
   Bell,
   Shield,
@@ -11,6 +11,8 @@ import {
   Verified,
   TimerReset,
   CalendarRange,
+  TicketCheck,
+  User,
 } from "lucide-react";
 
 export default function ViewingKeys() {
@@ -128,7 +130,7 @@ export default function ViewingKeys() {
                     </div>
                     <div className="flex gap-4">
                       <span className="material-symbols-outlined text-primary-container text-lg">
-                        <CalendarRange/>
+                        <CalendarRange />
                       </span>
                       <p className="text-xs text-on-surface-variant leading-normal">
                         <strong className="text-on-surface block mb-1 uppercase tracking-tighter">
@@ -327,7 +329,7 @@ export default function ViewingKeys() {
                         <label className="flex items-center justify-between p-4 bg-surface-container rounded hover:bg-surface-container-high transition-colors cursor-pointer group">
                           <div className="flex items-center gap-3">
                             <span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary-container">
-                              account_balance_wallet
+                              <TicketCheck />
                             </span>
                             <span className="text-xs font-bold uppercase tracking-tight">
                               Transaction Values
@@ -341,7 +343,7 @@ export default function ViewingKeys() {
                         <label className="flex items-center justify-between p-4 bg-surface-container rounded hover:bg-surface-container-high transition-colors cursor-pointer group">
                           <div className="flex items-center gap-3">
                             <span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary-container">
-                              assignment_ind
+                              <User />
                             </span>
                             <span className="text-xs font-bold uppercase tracking-tight">
                               Employee Identities

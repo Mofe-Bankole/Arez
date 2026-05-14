@@ -1,6 +1,6 @@
 "use client";
 
-import Sidebar from "@/components/Sidebar";
+import Sidebar from "@/components/ui/Sidebar";
 import "../globals.css";
 import { Download, Filter, Search } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -8,7 +8,7 @@ import { useEffect, useState, useRef, useMemo } from "react";
 import { PublicKey } from "@solana/web3.js";
 import type { ConfirmedSignatureInfo } from "@solana/web3.js";
 import { config } from "@/lib/config";
-import BoardHeader from "@/components/BoardHeader";
+import BoardHeader from "@/components/ui/BoardHeader";
 
 // Using Helius API for transaction history
 const HeliusApiKey = process.env.NEXT_PUBLIC_HELIUS_API_KEY!;

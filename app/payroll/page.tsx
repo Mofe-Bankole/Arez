@@ -2,9 +2,9 @@
 
 import React from "react";
 import { ArezPrivateTransferPayload, SendPrivatePayment } from "@/lib/payments";
-import { ArezkProver } from "@/lib/provers";
+import { ArezkProver } from "@/lib/umbra/provers";
 import { IUmbraClient } from "@umbra-privacy/sdk/interfaces";
-import SideBar from "@/components/Sidebar";
+import SideBar from "@/components/ui/Sidebar";
 import {
   CheckCircle2,
   CloudUpload,
@@ -14,7 +14,7 @@ import {
   XCircle,
   Loader2,
 } from "lucide-react";
-import BoardHeader from "@/components/BoardHeader";
+import BoardHeader from "@/components/ui/BoardHeader";
 import { PublicKey } from "@solana/web3.js";
 import { useUmbra } from "@/context/UmbraContext";
 

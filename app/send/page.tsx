@@ -1,16 +1,16 @@
 "use client";
 import React, { useEffect } from "react";
-import Sidebar from "@/components/Sidebar";
+import Sidebar from "@/components/ui/Sidebar";
 import { UserSearch, BadgeCheck, KeyRound, ChevronDown } from "lucide-react";
 import {
   ArezPrivateTransferPayload,
   SendPrivatePayment,
   usePublicPayment,
 } from "@/lib/payments";
-import BoardHeader from "@/components/BoardHeader";
-import TransactionModal from "@/components/TransactionModal";
+import BoardHeader from "@/components/ui/BoardHeader";
+import TransactionModal from "@/components/ui/TransactionModal";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { ArezkProver } from "@/lib/provers";
+import { ArezkProver } from "@/lib/umbra/provers";
 import { IUmbraClient } from "@umbra-privacy/sdk/interfaces";
 import { useUmbra } from "@/context/UmbraContext";
 

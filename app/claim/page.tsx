@@ -1,10 +1,10 @@
 // app/claim/page.tsx
 "use client";
 import React, { useEffect } from "react";
-import { scanAndClaimUtxos } from "@/lib/claim";
+import { scanAndClaimUtxos } from "@/lib/umbra/claim";
 import { useWallet } from "@solana/wallet-adapter-react";
-import SideBar from "@/components/Sidebar";
-import BoardHeader from "@/components/BoardHeader";
+import SideBar from "@/components/ui/Sidebar";
+import BoardHeader from "@/components/ui/BoardHeader";
 import { Loader2, CheckCircle2, ShieldCheck } from "lucide-react";
 import { createU32 } from "@umbra-privacy/sdk/utils";
 import { getClaimableUtxoScannerFunction } from "@umbra-privacy/sdk";

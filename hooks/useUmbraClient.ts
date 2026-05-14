@@ -1,7 +1,8 @@
 "use client";
 import { useState, useCallback, useRef } from "react";
-import { createUmbraClientFromWallet } from "@/lib/umbra";
+// import { createUmbraClientFromWallet } from "@/lib/umbra";
 import { IUmbraClient } from "@umbra-privacy/sdk/interfaces";
+import { createUmbraClientFromWallet } from "@/lib/umbra/umbra";
 
 export function useUmbraClient() {
   const [umbraClient, setUmbraClient] = useState<IUmbraClient | null>(null);
