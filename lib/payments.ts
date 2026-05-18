@@ -44,6 +44,7 @@ export interface ArezPrivateTransferPayload extends PaymentRequest {
   zkProver: ZkProverForReceiverClaimableUtxoFromPublicBalance;
   mint: string;
 }
+
 /** Result shape returned by every payment helper */
 export type ArezTransactionPayload = {
   status: "successful" | "failed";

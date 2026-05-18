@@ -2,107 +2,22 @@
 
 import Sidebar from "@/components/ui/Sidebar";
 import "../globals.css";
-import { Download, Filter, Search } from "lucide-react";
+import { Download, Filter, FileText, Search } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { useEffect, useState, useRef, useMemo } from "react";
-import { PublicKey } from "@solana/web3.js";
-import type { ConfirmedSignatureInfo } from "@solana/web3.js";
-import { config } from "@/lib/config";
+import { Fragment, useState, useMemo } from "react";
 import BoardHeader from "@/components/ui/BoardHeader";
-
-// Using Helius API for transaction history
-const HeliusApiKey = process.env.NEXT_PUBLIC_HELIUS_API_KEY!;
-const HeliusBaseUrl = "https://api-devnet.helius-rpc.com/v0/addresses";
-type TxRow = {
-  signature: string;
-  date: string;
-  time: string;
-  type: "Sent" | "Received" | "Unknown";
-  counterparty: string;
-  amount: string;
-  token: string;
-  status: "confirmed" | "failed";
-};
-
-function shortenAddress(addr: string) {
-  return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
-}
-
-// Token mint addresses for devnet USDC and USDT
-const USDC_MINT = "4oG4sjmopf5MzvTHLE8rpVJ2uyczxfsw2K84SUTpNDx7";
-const USDT_MINT = "DXQwBNGgyQ2BzGWxEriJPVmXYFQBsQbXvfvfSNTaJkL6";
-
-// Helper to parse Helius transaction format into TxRow
-async function parseHeliusTx(tx: any, walletAddress: string): Promise<TxRow> {
-  // Helius returns similar fields as in example
-  const signature = tx.signature;
-  const timestamp = tx.timestamp ?? tx.blockTime ?? 0;
-  const dateObj = new Date(timestamp * 1000);
-  const dateStr = dateObj.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-  const timeStr = dateObj.toISOString().split("T")[1].split(".")[0] + " UTC";
-
-  // Determine native transfer amount if present
-  let type: TxRow["type"] = "Unknown";
-  let counterparty = "Unknown";
-  let amount = "—";
-  let token = "SOL";
-
-  if (tx.nativeTransfers && tx.nativeTransfers.length > 0) {
-    const nt = tx.nativeTransfers[0];
-    const diff = nt.amount / 1e9; // lamports to SOL
-    amount = Math.abs(diff).toFixed(4);
-    token = "SOL";
-    if (nt.fromUserAccount === walletAddress) {
-      type = "Sent";
-      counterparty = nt.toUserAccount;
-    } else if (nt.toUserAccount === walletAddress) {
-      type = "Received";
-      counterparty = nt.fromUserAccount;
-    }
-  }
-
-  // Fallback to token transfers if present
-  if (type === "Unknown" && tx.tokenTransfers && tx.tokenTransfers.length > 0) {
-    const tt = tx.tokenTransfers[0];
-    const diff = tt.amount; // raw amount, may need decimals handling
-    amount = Math.abs(diff).toString();
-    // Determine token name based on mint address if available
-    if (tt.mint === USDC_MINT) {
-      token = "USDC";
-    } else if (tt.mint === USDT_MINT) {
-      token = "USDT";
-    } else {
-      token = tt.tokenSymbol ?? "SPL";
-    }
-    if (tt.fromUserAccount === walletAddress) {
-      type = "Sent";
-      counterparty = tt.toUserAccount;
-    } else if (tt.toUserAccount === walletAddress) {
-      type = "Received";
-      counterparty = tt.fromUserAccount;
-    }
-  }
-
-  // Shorten counterparty address for display consistency
-  if (counterparty !== "Unknown") {
-    counterparty = `${counterparty.slice(0, 6)}...${counterparty.slice(-4)}`;
-  }
-
-  return {
-    signature,
-    date: dateStr,
-    time: timeStr,
-    type,
-    counterparty,
-    amount,
-    token,
-    status: "confirmed",
-  };
-}
+import {
+  ENABLE_AI_SUMMARY,
+  ENABLE_HISTORY_REPORT,
+} from "@/lib/features";
+import {
+  fetchHeliusTransactions,
+  parseHeliusTx,
+  type TxRow,
+} from "@/lib/helius-transactions";
+import TxAiSummary from "@/components/history/TxAiSummary";
+import WeeklyReportModal from "@/components/history/WeeklyReportModal";
+import type { WeeklyReportResponse } from "@/app/api/history/report/route";
 
 export default function HistoryPage() {
   const { publicKey } = useWallet();
@@ -110,28 +25,48 @@ export default function HistoryPage() {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [hasFetched, setHasFetched] = useState(false);
+
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportLoading, setReportLoading] = useState(false);
+  const [reportError, setReportError] = useState<string | null>(null);
+  const [report, setReport] = useState<WeeklyReportResponse | null>(null);
+
   const fetchTxs = async () => {
+    if (!publicKey) return;
+    setLoading(true);
     try {
-      if (!publicKey) return;
       const address = publicKey.toString();
-      const url = `${HeliusBaseUrl}/${address}/transactions?api-key=${HeliusApiKey}`;
-      const resp = await fetch(url);
-      const data = await resp.json(); // expects array of transaction objects
-      if (!Array.isArray(data) || data.length === 0) {
-        setTxRows([]);
-        return;
-      }
-      const rows: TxRow[] = [];
-      for (const tx of data) {
-        // Map helius transaction to TxRow format using similar logic
-        const row = await parseHeliusTx(tx, address);
-        rows.push(row);
-      }
-      setTxRows(rows);
+      const data = await fetchHeliusTransactions(address);
+      setTxRows(data.map((tx) => parseHeliusTx(tx, address)));
     } catch (err) {
       console.error("Failed to fetch transactions:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGenerateReport = async () => {
+    if (!publicKey) return;
+    setReportOpen(true);
+    setReportLoading(true);
+    setReportError(null);
+    setReport(null);
+
+    try {
+      const res = await fetch(
+        `/api/history/report?wallet=${encodeURIComponent(publicKey.toString())}`,
+      );
+      if (!res.ok) {
+        const body = (await res.json()) as { error?: string };
+        throw new Error(body.error ?? "Failed to generate report");
+      }
+      setReport((await res.json()) as WeeklyReportResponse);
+    } catch (err) {
+      setReportError(
+        err instanceof Error ? err.message : "Report unavailable",
+      );
+    } finally {
+      setReportLoading(false);
     }
   };
   const handleRefresh = async () => {
@@ -214,6 +149,16 @@ export default function HistoryPage() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
+              {ENABLE_HISTORY_REPORT && (
+                <button
+                  type="button"
+                  onClick={handleGenerateReport}
+                  disabled={!publicKey}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-primary text-on-primary-container text-xs font-black uppercase tracking-wider rounded-lg transition-all disabled:opacity-40"
+                >
+                  <FileText size={14} /> Generate Weekly Report
+                </button>
+              )}
               <div className="relative flex items-center">
                 <Search
                   className="absolute left-3 text-on-surface-variant/50"
@@ -256,7 +201,7 @@ export default function HistoryPage() {
               </div>
             )}
 
-            {publicKey && !hasFetched && (
+            {publicKey && !hasFetched && !loading && (
               <div className="py-16 text-center bg-surface-container-low">
                 <button
                   onClick={handleRefresh}
@@ -268,6 +213,7 @@ export default function HistoryPage() {
             )}
 
             {filtered.map((tx, i) => (
+              <Fragment key={tx.signature}>
               <div
                 key={tx.signature}
                 className={`grid grid-cols-12 gap-4 py-6 px-6 items-center hover:bg-surface-container transition-all cursor-pointer border-t border-outline-variant/5 ${
@@ -338,6 +284,8 @@ export default function HistoryPage() {
                   )}
                 </div>
               </div>
+              {ENABLE_AI_SUMMARY && <TxAiSummary tx={tx} />}
+              </Fragment>
             ))}
           </div>
 
@@ -348,6 +296,14 @@ export default function HistoryPage() {
           </div>
         </section>
       </main>
+
+      <WeeklyReportModal
+        open={reportOpen}
+        loading={reportLoading}
+        error={reportError}
+        report={report}
+        onClose={() => setReportOpen(false)}
+      />
     </div>
   );
 }

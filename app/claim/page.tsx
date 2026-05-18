@@ -1,52 +1,74 @@
-// app/claim/page.tsx
 "use client";
-import React, { useEffect } from "react";
+
+import React, { Suspense, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { scanAndClaimUtxos } from "@/lib/umbra/claim";
 import { useWallet } from "@solana/wallet-adapter-react";
 import SideBar from "@/components/ui/Sidebar";
 import BoardHeader from "@/components/ui/BoardHeader";
 import { Loader2, CheckCircle2, ShieldCheck } from "lucide-react";
-import { createU32 } from "@umbra-privacy/sdk/utils";
-import { getClaimableUtxoScannerFunction } from "@umbra-privacy/sdk";
 import { useUmbra } from "@/context/UmbraContext";
+import { ENABLE_BATCH_QR } from "@/lib/features";
+import {
+  fetchPayrollBatch,
+  type PayrollBatchRow,
+  type PayrollRecipient,
+} from "@/lib/supabase";
 
-export default function ClaimPage() {
+function ClaimPageContent() {
+  const searchParams = useSearchParams();
+  const batchId = searchParams.get("batch");
   const { publicKey } = useWallet();
   const { umbraClient, initializeClient, ready, loading } = useUmbra();
-  const [scanning, setScanning] = React.useState(false);
-  const [result, setResult] = React.useState<{
+  const [scanning, setScanning] = useState(false);
+  const [result, setResult] = useState<{
     claimed: number;
-    results: any[];
+    results: unknown[];
   } | null>(null);
-  const [error, setError] = React.useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [payrollBatch, setPayrollBatch] = useState<PayrollBatchRow | null>(
+    null,
+  );
+  const [batchLoading, setBatchLoading] = useState(false);
+  const [batchError, setBatchError] = useState<string | null>(null);
 
   useEffect(() => {
     if (publicKey && !ready && !loading) initializeClient();
-  }, [publicKey, ready, loading]);
+  }, [publicKey, ready, loading, initializeClient]);
 
-  const handleDebug = async () => {
-    if (!umbraClient) return;
-    const client = umbraClient;
-    // scan all trees aggressively
-    for (let tree = 0; tree <= 20; tree++) {
+  useEffect(() => {
+    if (!ENABLE_BATCH_QR || !batchId) return;
+
+    const loadBatch = async () => {
+      setBatchLoading(true);
+      setBatchError(null);
       try {
-        const fetchUtxos = getClaimableUtxoScannerFunction({ client });
-        const { received } = await fetchUtxos(
-          createU32(BigInt(tree)),
-          createU32(BigInt(0)),
-        );
-        console.log(`Tree ${tree}: ${received.length} UTXOs`);
-        if (received.length > 0) {
-          console.log(
-            `Tree ${tree} UTXOs : `,
-            JSON.stringify(received, null, 2),
-          );
+        const batch = await fetchPayrollBatch(batchId);
+        if (!batch) {
+          setBatchError("Payroll batch not found");
+          return;
         }
-      } catch (err) {
-        console.log(`Tree ${tree}: error -`, err);
+        setPayrollBatch(batch);
+      } catch (err: unknown) {
+        setBatchError(
+          err instanceof Error ? err.message : "Failed to load batch",
+        );
+      } finally {
+        setBatchLoading(false);
       }
-    }
-  };
+    };
+
+    void loadBatch();
+  }, [batchId]);
+
+  const myPayment: PayrollRecipient | null = useMemo(() => {
+    if (!payrollBatch || !publicKey) return null;
+    const wallet = publicKey.toString();
+    return (
+      payrollBatch.recipients.find((r) => r.wallet === wallet) ?? null
+    );
+  }, [payrollBatch, publicKey]);
+
   const handleScanAndClaim = async () => {
     if (!umbraClient) return;
     setScanning(true);
@@ -56,8 +78,8 @@ export default function ClaimPage() {
     try {
       const res = await scanAndClaimUtxos(umbraClient);
       setResult(res);
-    } catch (err: any) {
-      setError(err.message ?? "Claim failed");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Claim failed");
     } finally {
       setScanning(false);
     }
@@ -79,7 +101,60 @@ export default function ClaimPage() {
             </p>
           </div>
 
-          {/* Status */}
+          {batchId && ENABLE_BATCH_QR && (
+            <div className="p-6 bg-surface-container-low rounded-xl border border-outline-variant/10 space-y-4">
+              <h3 className="text-sm font-black uppercase tracking-widest text-primary-container">
+                Payroll Batch Claim
+              </h3>
+              {batchLoading && (
+                <p className="text-sm text-on-surface-variant animate-pulse">
+                  Loading batch details...
+                </p>
+              )}
+              {batchError && (
+                <p className="text-sm text-red-400">{batchError}</p>
+              )}
+              {payrollBatch && !batchLoading && (
+                <>
+                  <p className="text-xs text-on-surface-variant">
+                    Batch from employer · {payrollBatch.recipients.length}{" "}
+                    recipients · status {payrollBatch.status}
+                  </p>
+                  {!publicKey && (
+                    <p className="text-sm text-on-surface-variant">
+                      Connect your wallet to see your payment in this batch.
+                    </p>
+                  )}
+                  {publicKey && myPayment && (
+                    <div className="rounded-xl bg-surface-container p-4 border border-primary-container/20 space-y-2">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">
+                        Your payment
+                      </p>
+                      <p className="text-2xl font-bold text-on-surface">
+                        {myPayment.amount} SOL
+                      </p>
+                      {myPayment.memo && (
+                        <p className="text-xs text-on-surface-variant">
+                          Memo: {myPayment.memo}
+                        </p>
+                      )}
+                      <p className="text-[10px] font-mono text-outline">
+                        To: {publicKey.toString().slice(0, 8)}...
+                        {publicKey.toString().slice(-4)}
+                      </p>
+                    </div>
+                  )}
+                  {publicKey && !myPayment && (
+                    <p className="text-sm text-outline">
+                      No payment in this batch is assigned to your connected
+                      wallet.
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+
           <div className="p-6 bg-surface-container-low rounded-xl border border-outline-variant/10 space-y-2">
             <div className="flex items-center gap-3">
               <ShieldCheck
@@ -111,6 +186,7 @@ export default function ClaimPage() {
           </div>
 
           <button
+            type="button"
             onClick={handleScanAndClaim}
             disabled={!ready || scanning}
             className="w-full py-5 bg-primary text-on-primary-container rounded-xl font-black text-sm uppercase tracking-[0.2em] shadow-[0_0_30px_rgba(0,245,255,0.2)] hover:scale-[1.01] active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3"
@@ -125,6 +201,24 @@ export default function ClaimPage() {
           </button>
         </div>
       </main>
+    </div>
+  );
+}
+
+export default function ClaimPage() {
+  return (
+    <Suspense
+      fallback={<ClaimLoadingFallback />}
+    >
+      <ClaimPageContent />
+    </Suspense>
+  );
+}
+
+function ClaimLoadingFallback() {
+  return (
+    <div className="flex h-screen w-full items-center justify-center bg-surface-dim text-on-surface-variant text-sm">
+      Loading...
     </div>
   );
 }

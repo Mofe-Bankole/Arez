@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Sidebar from "@/components/ui/Sidebar";
 import { UserSearch, BadgeCheck, KeyRound, ChevronDown } from "lucide-react";
 import {
@@ -19,7 +20,8 @@ const USDC_MINT = "4oG4sjmopf5MzvTHLE8rpVJ2uyczxfsw2K84SUTpNDx7"; // dUSDC devne
 const USDT_MINT = "DXQwBNGgyQ2BzGWxEriJPVmXYFQBsQbXvfvfSNTaJkL6"; // dUSDT devdev
 // devnet USDC/USDT mints for dUSDC and dUSDT
 
-export default function SendPage() {
+function SendPageContent() {
+  const searchParams = useSearchParams();
   const { publicKey } = useWallet();
   const { umbraClient, initializeClient, ready, loading } = useUmbra();
   const [recipient, setRecipient] = React.useState("");
@@ -43,7 +45,11 @@ export default function SendPage() {
 
   const sendPublic = usePublicPayment();
 
-  // 🔑 KEY FIX — initialize client on mount when wallet connects
+  useEffect(() => {
+    const prefill = searchParams.get("recipient");
+    if (prefill) setRecipient(prefill);
+  }, [searchParams]);
+
   useEffect(() => {
     if (publicKey && !ready && !loading) {
       initializeClient();
@@ -356,5 +362,19 @@ export default function SendPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function SendPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-screen w-full items-center justify-center bg-surface-dim text-on-surface-variant text-sm">
+          Loading...
+        </div>
+      }
+    >
+      <SendPageContent />
+    </Suspense>
   );
 }

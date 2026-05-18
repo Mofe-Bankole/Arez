@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import QRCode from "qrcode";
 import { ArezPrivateTransferPayload, SendPrivatePayment } from "@/lib/payments";
 import { ArezkProver } from "@/lib/umbra/provers";
 import { IUmbraClient } from "@umbra-privacy/sdk/interfaces";
@@ -10,13 +11,26 @@ import {
   CloudUpload,
   Eye,
   Lock,
+  QrCode,
   ShieldCheck,
   XCircle,
   Loader2,
 } from "lucide-react";
 import BoardHeader from "@/components/ui/BoardHeader";
 import { PublicKey } from "@solana/web3.js";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { useUmbra } from "@/context/UmbraContext";
+import {
+  ENABLE_BATCH_QR,
+  ENABLE_BATCH_STATUS,
+} from "@/lib/features";
+import { savePayrollBatch } from "@/lib/supabase";
+import PayrollQrModal from "@/components/payroll/PayrollQrModal";
+import {
+  addBatchHistoryEntry,
+  loadBatchHistory,
+  type BatchHistoryEntry,
+} from "@/lib/storage/batch-history";
 
 const SOL_MINT = "So11111111111111111111111111111111111111112";
 
@@ -77,14 +91,29 @@ function parseCsvText(text: string): CSVRow[] {
 }
 
 export default function PayrollPage() {
+  const { publicKey } = useWallet();
   const [shieldAll, setShieldAll] = React.useState(true);
   const [batchRows, setBatchRows] = React.useState<BatchRow[]>([]);
   const [parseError, setParseError] = React.useState<string | null>(null);
   const [isDragging, setIsDragging] = React.useState(false);
   const [isExecuting, setIsExecuting] = React.useState(false);
   const [isDone, setIsDone] = React.useState(false);
+  const [qrOpen, setQrOpen] = React.useState(false);
+  const [qrDataUrl, setQrDataUrl] = React.useState("");
+  const [claimUrl, setClaimUrl] = React.useState("");
+  const [qrLoading, setQrLoading] = React.useState(false);
+  const [qrError, setQrError] = React.useState<string | null>(null);
+  const [batchHistory, setBatchHistory] = React.useState<BatchHistoryEntry[]>(
+    [],
+  );
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const { umbraClient, initializeClient, ready } = useUmbra();
+
+  React.useEffect(() => {
+    if (ENABLE_BATCH_STATUS) {
+      setBatchHistory(loadBatchHistory());
+    }
+  }, []);
 
   // — CSV handling —
   const handleFile = (file: File) => {
@@ -161,6 +190,8 @@ export default function PayrollPage() {
 
     setIsExecuting(true);
     setIsDone(false);
+    let successInRun = 0;
+    const pendingAtStart = batchRows.filter((r) => r.status === "pending").length;
 
     for (let i = 0; i < batchRows.length; i++) {
       if (batchRows[i].status !== "pending") continue;
@@ -187,17 +218,17 @@ export default function PayrollPage() {
 
         const sig = "confirmed";
 
+        successInRun += 1;
         setBatchRows((prev) =>
           prev.map((r, idx) =>
             idx === i ? { ...r, status: "success", sig } : r,
           ),
         );
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Failed";
         setBatchRows((prev) =>
           prev.map((r, idx) =>
-            idx === i
-              ? { ...r, status: "failed", error: err.message ?? "Failed" }
-              : r,
+            idx === i ? { ...r, status: "failed", error: message } : r,
           ),
         );
       }
@@ -205,6 +236,52 @@ export default function PayrollPage() {
 
     setIsExecuting(false);
     setIsDone(true);
+
+    if (ENABLE_BATCH_STATUS && shieldAll && successInRun > 0) {
+      const batchType =
+        batchRows.find((r) => r.memo)?.memo?.replace(/\s+/g, "") ?? "Salaries";
+      addBatchHistoryEntry({
+        recipientCount: totalRecipients,
+        totalAmount: grossAmount,
+        status: successInRun === pendingAtStart ? "Confirmed" : "Pending",
+        batchType,
+      });
+      setBatchHistory(loadBatchHistory());
+    }
+  };
+
+  const handleGenerateQr = async () => {
+    if (!publicKey || batchRows.length === 0) return;
+    setQrLoading(true);
+    setQrError(null);
+
+    try {
+      const recipients = batchRows
+        .filter((r) => r.status !== "failed" || !r.error?.includes("Invalid"))
+        .map((r) => ({
+          wallet: r.recipient,
+          amount: r.amount,
+          memo: r.memo,
+        }));
+
+      const batchId = await savePayrollBatch(
+        publicKey.toString(),
+        recipients,
+      );
+
+      const appUrl =
+        process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+      const url = `${appUrl}/claim?batch=${batchId}`;
+      const dataUrl = await QRCode.toDataURL(url, { width: 400, margin: 2 });
+
+      setClaimUrl(url);
+      setQrDataUrl(dataUrl);
+      setQrOpen(true);
+    } catch (err: unknown) {
+      setQrError(err instanceof Error ? err.message : "Failed to generate QR");
+    } finally {
+      setQrLoading(false);
+    }
   };
 
   // — Derived stats —
@@ -545,7 +622,21 @@ export default function PayrollPage() {
               </div>
 
               <div className="relative z-10 w-full md:w-auto flex flex-col md:flex-row gap-4">
+                {ENABLE_BATCH_QR && (
+                  <button
+                    type="button"
+                    disabled={
+                      totalRecipients === 0 || isExecuting || qrLoading
+                    }
+                    onClick={handleGenerateQr}
+                    className="px-8 py-5 border border-primary-container/30 text-sm font-bold uppercase tracking-[0.2em] rounded-xl hover:bg-surface-container-high transition-all flex items-center justify-center gap-3 disabled:opacity-40 text-primary-container"
+                  >
+                    <QrCode className="h-5 w-5" />
+                    {qrLoading ? "Generating..." : "Generate Payroll QR"}
+                  </button>
+                )}
                 <button
+                  type="button"
                   disabled={totalRecipients === 0 || isExecuting}
                   className="px-8 py-5 border border-outline-variant/30 text-sm font-bold uppercase tracking-[0.2em] rounded-xl hover:bg-surface-container-high transition-all flex items-center justify-center space-x-3 disabled:opacity-40"
                   onClick={() => setBatchRows([])}
@@ -574,11 +665,94 @@ export default function PayrollPage() {
                   </span>
                 </button>
               </div>
+              {qrError && (
+                <p className="relative z-10 text-xs text-red-400 mt-2 w-full">
+                  {qrError}
+                </p>
+              )}
             </div>
+
+            {ENABLE_BATCH_STATUS && batchHistory.length > 0 && (
+              <div className="bg-surface-container rounded-xl border border-outline-variant/10 overflow-hidden">
+                <div className="p-6 border-b border-outline-variant/10">
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface/70">
+                    Recent Batches
+                  </h4>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead>
+                      <tr className="bg-surface-container-highest/50 text-[10px] font-bold uppercase tracking-widest text-outline">
+                        <th className="px-6 py-4">Batch ID</th>
+                        <th className="px-6 py-4">Date</th>
+                        <th className="px-6 py-4">Recipients</th>
+                        <th className="px-6 py-4">Amount</th>
+                        <th className="px-6 py-4">Privacy Level</th>
+                        <th className="px-6 py-4">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-outline-variant/5">
+                      {batchHistory.map((batch) => (
+                        <tr
+                          key={batch.id}
+                          className="hover:bg-surface-container-highest/30"
+                        >
+                          <td className="px-6 py-4 text-xs font-mono text-on-surface">
+                            {batch.id}
+                          </td>
+                          <td className="px-6 py-4 text-xs text-on-surface-variant">
+                            {new Date(batch.timestamp).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              },
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-xs font-bold">
+                            {batch.recipientCount}
+                          </td>
+                          <td className="px-6 py-4 text-xs font-bold">
+                            {batch.totalAmount.toLocaleString("en-US", {
+                              minimumFractionDigits: 2,
+                            })}{" "}
+                            SOL
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-tertiary-fixed-dim">
+                              Maximum
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span
+                              className={`text-[10px] font-black uppercase tracking-widest ${
+                                batch.status === "Confirmed"
+                                  ? "text-green-400"
+                                  : "text-yellow-400"
+                              }`}
+                            >
+                              {batch.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Branding watermark */}
+        <PayrollQrModal
+          open={qrOpen}
+          qrDataUrl={qrDataUrl}
+          claimUrl={claimUrl}
+          recipientCount={totalRecipients}
+          totalSol={grossAmount}
+          onClose={() => setQrOpen(false)}
+        />
       </main>
     </div>
   );

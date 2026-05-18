@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
 import {
+  BarChart2,
   ChevronLeft,
   ChevronRight,
   Download,
@@ -11,10 +12,14 @@ import {
   History,
   KeyRound,
   LayoutDashboard,
-  Receipt,
   Send,
   Settings,
+  Users,
 } from "lucide-react";
+import {
+  ENABLE_CONTACTS,
+  ENABLE_DUNE,
+} from "@/lib/features";
 
 const COLLAPSE_KEY = "arez.sidebar.collapsed";
 
@@ -68,6 +73,24 @@ export default function Sidebar() {
       label: "History",
       icon: <History className="h-5 w-5" aria-hidden="true" />,
     },
+    ...(ENABLE_DUNE
+      ? [
+          {
+            href: "/analytics",
+            label: "Analytics",
+            icon: <BarChart2 className="h-5 w-5" aria-hidden="true" />,
+          } satisfies NavItem,
+        ]
+      : []),
+    ...(ENABLE_CONTACTS
+      ? [
+          {
+            href: "/contacts",
+            label: "Contacts",
+            icon: <Users className="h-5 w-5" aria-hidden="true" />,
+          } satisfies NavItem,
+        ]
+      : []),
     {
       href: "/keys",
       label: "Viewing Keys",
